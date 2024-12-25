@@ -1,30 +1,94 @@
 import React, { useState } from 'react';
-import { Car, Lock, Mail } from 'lucide-react';
+import { Car, Lock, Mail, User } from 'lucide-react';
 import axios from 'axios';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    username: '',
     email: '',
     password: '',
-    licensePlate: '',
+    licensePlateNumber: '',
     paymentMethod: '',
     role: 'Driver',
   });
 
+  const [errors, setErrors] = useState({
+    username: '',
+    email: '',
+    password: '',
+    licensePlateNumber: '',
+    paymentMethod: '',
+  });
+
+  const [message, setMessage] = useState({ text: '', type: '' });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: '' });
+  };
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!formData.username) {
+      newErrors.username = 'Username is required';
+    }
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+    }
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    }
+    if (formData.role === 'Driver') {
+      if (!formData.licensePlateNumber) {
+        newErrors.licensePlateNumber = 'License plate number is required';
+      }
+      if (!formData.paymentMethod) {
+        newErrors.paymentMethod = 'Payment method is required';
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; 
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validate()) {
+      return; 
+    }
+
     try {
-      const response = await axios.post('/api/signup', formData);
-      alert('Signup successful!');
+      let response;
+      const dataToSend = {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+      };
+
+      if (formData.role === 'Driver') {
+        dataToSend.licensePlateNumber = formData.licensePlateNumber;
+        dataToSend.paymentMethod = formData.paymentMethod;
+      }
+
+      if (formData.role === 'Driver') {
+        response = await axios.post('http://localhost:8080/api/drivers/signup', dataToSend);
+      } else if (formData.role === 'ParkingLotManager') {
+        response = await axios.post('http://localhost:8080/api/managers/signup', dataToSend);
+      } else if (formData.role === 'SystemAdmin') {
+        response = await axios.post('http://localhost:8080/api/admins/signup', dataToSend);
+      }
+
+      setMessage({ text: 'Signup successful!', type: 'success' });
     } catch (error) {
-      alert('Error during signup: ' + error.response?.data?.message || error.message);
+      console.log(error.response);
+      setMessage({
+        text: error.response?.data?.message || 'Error during signup',
+        type: 'error',
+      });
     }
   };
 
@@ -41,7 +105,6 @@ const Signup = () => {
         fontFamily: 'Roboto, sans-serif',
       }}
     >
-      {/* Signup Container */}
       <div
         style={{
           width: '100%',
@@ -54,7 +117,6 @@ const Signup = () => {
           zIndex: 10,
         }}
       >
-        {/* Logo and Title */}
         <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
           <div
             style={{
@@ -74,25 +136,75 @@ const Signup = () => {
           <p style={{ color: '#a0aec0', marginTop: '0.5rem' }}>Create your rental account</p>
         </div>
 
-        {/* Signup Form */}
+        {message.text && (
+          <div
+            style={{
+              marginBottom: '1rem',
+              padding: '1rem',
+              backgroundColor: message.type === 'success' ? '#38a169' : '#e53e3e',
+              color: '#fff',
+              borderRadius: '0.5rem',
+              textAlign: 'center',
+            }}
+          >
+            {message.text}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1rem' }}>
           <div style={{ display: 'grid', gap: '0.5rem' }}>
-            <label
-              htmlFor="firstName"
-              style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}
-            >
-              First Name
+            <label htmlFor="username" style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}>
+              Username
             </label>
-            <input
-              type="text"
-              name="firstName"
-              id="firstName"
-              value={formData.firstName}
+            <div style={{ position: 'relative' }}>
+              <User
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '0.75rem',
+                  transform: 'translateY(-50%)',
+                  color: '#718096',
+                  width: '1.25rem',
+                  height: '1.25rem',
+                }}
+              />
+              <input
+                type="text"
+                name="username"
+                id="username"
+                value={formData.username}
+                onChange={handleChange}
+                required
+                style={{
+                  width: '100%',
+                  maxWidth: '440px',
+                  padding: '0.75rem 0.75rem 0.75rem 2.5rem',
+                  border: '1px solid #4a5568',
+                  borderRadius: '0.5rem',
+                  outline: 'none',
+                  fontSize: '0.95rem',
+                  backgroundColor: '#1a202c',
+                  color: '#edf2f7',
+                }}
+                placeholder="Enter your username"
+              />
+            </div>
+            {errors.username && <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.username}</span>}
+          </div>
+
+          <div style={{ display: 'grid', gap: '0.5rem' }}>
+            <label htmlFor="role" style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}>
+              Role
+            </label>
+            <select
+              name="role"
+              id="role"
+              value={formData.role}
               onChange={handleChange}
               required
               style={{
                 width: '100%',
-                maxWidth: '470px',
+                maxWidth: '490px',
                 padding: '0.75rem',
                 border: '1px solid #4a5568',
                 borderRadius: '0.5rem',
@@ -101,44 +213,15 @@ const Signup = () => {
                 backgroundColor: '#1a202c',
                 color: '#edf2f7',
               }}
-              placeholder="Enter your first name"
-            />
+            >
+              <option value="Driver">Driver</option>
+              <option value="ParkingLotManager">Parking Lot Manager</option>
+              <option value="SystemAdmin">System Administrator</option>
+            </select>
           </div>
 
           <div style={{ display: 'grid', gap: '0.5rem' }}>
-            <label
-              htmlFor="lastName"
-              style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}
-            >
-              Last Name
-            </label>
-            <input
-              type="text"
-              name="lastName"
-              id="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              required
-              style={{
-                width: '100%',
-                maxWidth: '470px',
-                padding: '0.75rem',
-                border: '1px solid #4a5568',
-                borderRadius: '0.5rem',
-                outline: 'none',
-                fontSize: '0.95rem',
-                backgroundColor: '#1a202c',
-                color: '#edf2f7',
-              }}
-              placeholder="Enter your last name"
-            />
-          </div>
-
-          <div style={{ display: 'grid', gap: '0.5rem' }}>
-            <label
-              htmlFor="email"
-              style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}
-            >
+            <label htmlFor="email" style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}>
               Email Address
             </label>
             <div style={{ position: 'relative' }}>
@@ -174,13 +257,11 @@ const Signup = () => {
                 placeholder="Enter your email"
               />
             </div>
+            {errors.email && <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.email}</span>}
           </div>
 
           <div style={{ display: 'grid', gap: '0.5rem' }}>
-            <label
-              htmlFor="password"
-              style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}
-            >
+            <label htmlFor="password" style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}>
               Password
             </label>
             <div style={{ position: 'relative' }}>
@@ -216,123 +297,103 @@ const Signup = () => {
                 placeholder="Enter your password"
               />
             </div>
+            {errors.password && <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.password}</span>}
           </div>
 
-          <div style={{ display: 'grid', gap: '0.5rem' }}>
-            <label
-              htmlFor="licensePlate"
-              style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}
-            >
-              License Plate
-            </label>
-            <input
-              type="text"
-              name="licensePlate"
-              id="licensePlate"
-              value={formData.licensePlate}
-              onChange={handleChange}
-              style={{
-                width: '100%',
-                maxWidth: '470px',
-                padding: '0.75rem',
-                border: '1px solid #4a5568',
-                borderRadius: '0.5rem',
-                outline: 'none',
-                fontSize: '0.95rem',
-                backgroundColor: '#1a202c',
-                color: '#edf2f7',
-              }}
-              placeholder="Enter your license plate"
-            />
-          </div>
+          {/* Driver-specific fields */}
+          {formData.role === 'Driver' && (
+            <>
+              <div style={{ display: 'grid', gap: '0.5rem' }}>
+                <label
+                  htmlFor="licensePlateNumber"
+                  style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}
+                >
+                  License Plate Number
+                </label>
+                <input
+                  type="text"
+                  name="licensePlateNumber"
+                  id="licensePlateNumber"
+                  value={formData.licensePlateNumber}
+                  onChange={handleChange}
+                  required
+                  style={{
+                    width: '100%',
+                    maxWidth: '440px',
+                    padding: '0.75rem',
+                    border: '1px solid #4a5568',
+                    borderRadius: '0.5rem',
+                    outline: 'none',
+                    fontSize: '0.95rem',
+                    backgroundColor: '#1a202c',
+                    color: '#edf2f7',
+                  }}
+                  placeholder="Enter your license plate number"
+                />
+                {errors.licensePlateNumber && (
+                  <span style={{ color: 'red', fontSize: '0.8rem' }}>
+                    {errors.licensePlateNumber}
+                  </span>
+                )}
+              </div>
 
-          <div style={{ display: 'grid', gap: '0.5rem' }}>
-            <label
-              htmlFor="paymentMethod"
-              style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}
-            >
-              Payment Method
-            </label>
-            <input
-              type="text"
-              name="paymentMethod"
-              id="paymentMethod"
-              value={formData.paymentMethod}
-              onChange={handleChange}
-              style={{
-                width: '100%',
-                maxWidth: '470px',
-                padding: '0.75rem',
-                border: '1px solid #4a5568',
-                borderRadius: '0.5rem',
-                outline: 'none',
-                fontSize: '0.95rem',
-                backgroundColor: '#1a202c',
-                color: '#edf2f7',
-              }}
-              placeholder="Enter payment method"
-            />
-          </div>
-
-          <div style={{ display: 'grid', gap: '0.5rem' }}>
-            <label
-              htmlFor="role"
-              style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}
-            >
-              Role
-            </label>
-            <select
-              name="role"
-              id="role"
-              value={formData.role}
-              onChange={handleChange}
-              required
-              style={{
-                width: '100%',
-                maxWidth: '470px',
-                padding: '0.75rem',
-                border: '1px solid #4a5568',
-                borderRadius: '0.5rem',
-                outline: 'none',
-                fontSize: '0.95rem',
-                backgroundColor: '#1a202c',
-                color: '#edf2f7',
-              }}
-            >
-              <option value="Driver">Driver</option>
-              <option value="ParkingLotManager">Parking Lot Manager</option>
-              <option value="SystemAdmin">System Administrator</option>
-            </select>
-          </div>
+              <div style={{ display: 'grid', gap: '0.5rem' }}>
+                <label htmlFor="paymentMethod" style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}>
+                  Payment Method
+                </label>
+                <input
+                  type="text"
+                  name="paymentMethod"
+                  id="paymentMethod"
+                  value={formData.paymentMethod}
+                  onChange={handleChange}
+                  required
+                  style={{
+                    width: '100%',
+                    maxWidth: '440px',
+                    padding: '0.75rem',
+                    border: '1px solid #4a5568',
+                    borderRadius: '0.5rem',
+                    outline: 'none',
+                    fontSize: '0.95rem',
+                    backgroundColor: '#1a202c',
+                    color: '#edf2f7',
+                  }}
+                  placeholder="Enter your payment method"
+                />
+                {errors.paymentMethod && (
+                  <span style={{ color: 'red', fontSize: '0.8rem' }}>
+                    {errors.paymentMethod}
+                  </span>
+                )}
+              </div>
+            </>
+          )}
 
           <button
             type="submit"
             style={{
               width: '100%',
-              maxWidth: '470px',
-              padding: '0.75rem',
+              padding: '1rem',
+              fontSize: '1rem',
+              fontWeight: '600',
+              color: '#fff',
+              backgroundColor: '#2563eb',
               border: 'none',
               borderRadius: '0.5rem',
-              backgroundColor: '#2563eb',
-              color: 'white',
-              fontSize: '0.95rem',
-              fontWeight: '500',
               cursor: 'pointer',
-              transition: 'background-color 0.2s ease',
+              transition: 'background-color 0.2s',
             }}
-            onMouseEnter={(e) => (e.target.style.backgroundColor = '#1d4ed8')}
-            onMouseLeave={(e) => (e.target.style.backgroundColor = '#2563eb')}
           >
             Sign Up
           </button>
+          <p style={{ marginTop: '1rem', textAlign: 'center', fontSize: '0.85rem', color: '#a0aec0' }}>
+            Already have an account?{' '}
+            <a href="/login" style={{ fontWeight: '500', color: '#63b3ed' }}>
+              Sign In
+            </a>
+          </p>
         </form>
-
-        <p style={{ marginTop: '1rem', textAlign: 'center', fontSize: '0.85rem', color: '#a0aec0' }}>
-          Already have an account?{' '}
-          <a href="/login" style={{ fontWeight: '500', color: '#63b3ed' }}>
-            Sign in now
-          </a>
-        </p>
       </div>
     </div>
   );

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Car, Lock, Mail } from 'lucide-react';
+import { Car, Lock, User } from 'lucide-react';
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ username: '', password: '', role: '' });
+  const [message, setMessage] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -11,7 +12,47 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login attempted with:', formData);
+  
+    if (!formData.username || !formData.password || !formData.role) {
+      setMessage({ text: 'Username, password, and role are required', type: 'error' });
+      return;
+    }
+
+    let apiUrl = '';
+    if (formData.role === 'driver') {
+      apiUrl = 'http://localhost:8080/api/drivers/login';
+    } else if (formData.role === 'admin') {
+      apiUrl = 'http://localhost:8080/api/admins/login';
+    } else if (formData.role === 'manager') {
+      apiUrl = 'http://localhost:8080/api/managers/login';
+    } else {
+      setMessage({ text: 'Invalid role selected', type: 'error' });
+      return;
+    }
+  
+    const requestData = {
+      username: formData.username,
+      password: formData.password,
+    };
+  
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setMessage({ text: data.message || 'Login successful!', type: 'success' });
+      } else {
+        setMessage({ text: data.message || 'Login failed', type: 'error' });
+      }
+    } catch (error) {
+      setMessage({ text: 'Network error, please try again', type: 'error' });
+    }
+    setFormData({ username: '', password: '', role: '' });
   };
 
   return (
@@ -57,17 +98,33 @@ const Login = () => {
             <Car style={{ width: '1.75rem', height: '1.75rem', color: 'white' }} />
           </div>
           <h2 style={{ fontSize: '1.75rem', fontWeight: 'bold', color: '#edf2f7' }}>Welcome Back</h2>
-          <p style={{ color: '#a0aec0', marginTop: '0.5rem' }}>Sign in to your rental account</p>
+          <p style={{ color: '#a0aec0', marginTop: '0.5rem' }}>Sign in to your account</p>
         </div>
+
+        {/* Notification Message */}
+        {message && (
+          <div
+            style={{
+              marginBottom: '1rem',
+              padding: '0.75rem',
+              borderRadius: '0.5rem',
+              backgroundColor: message.type === 'error' ? '#e53e3e' : '#38a169',
+              color: 'white',
+              textAlign: 'center',
+            }}
+          >
+            {message.text}
+          </div>
+        )}
 
         {/* Login Form */}
         <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1rem' }}>
           <div style={{ display: 'grid', gap: '0.5rem' }}>
-            <label htmlFor="email" style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}>
-              Email Address
+            <label htmlFor="username" style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}>
+              Username
             </label>
             <div style={{ position: 'relative' }}>
-              <Mail
+              <User
                 style={{
                   position: 'absolute',
                   top: '50%',
@@ -79,10 +136,10 @@ const Login = () => {
                 }}
               />
               <input
-                type="email"
-                name="email"
-                id="email"
-                value={formData.email}
+                type="text"
+                name="username"
+                id="username"
+                value={formData.username}
                 onChange={handleChange}
                 required
                 style={{
@@ -96,7 +153,7 @@ const Login = () => {
                   backgroundColor: '#1a202c',
                   color: '#edf2f7',
                 }}
-                placeholder="Enter your email"
+                placeholder="Enter your username"
               />
             </div>
           </div>
@@ -138,6 +195,31 @@ const Login = () => {
                 placeholder="Enter your password"
               />
             </div>
+          </div>
+
+          <div style={{ display: 'grid', gap: '0.5rem' }}>
+            <label htmlFor="role" style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}>
+              Role
+            </label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              required
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                borderRadius: '0.5rem',
+                border: '1px solid #4a5568',
+                backgroundColor: '#1a202c',
+                color: '#edf2f7',
+              }}
+            >
+              <option value="">Select your role</option>
+              <option value="driver">Driver</option>
+              <option value="admin">Administrator</option>
+              <option value="manager">Lot Manager</option>
+            </select>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
