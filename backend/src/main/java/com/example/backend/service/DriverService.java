@@ -4,7 +4,10 @@ import com.example.backend.model.Driver;
 import com.example.backend.repository.DriverRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +16,9 @@ public class DriverService {
 
     @Autowired
     private DriverRepo driverRepo;
+
+    @Autowired
+    private ParkingSpotService parkingSpotService;
 
     public String signup(Driver driver) {
         List<Driver> existingDrivers = driverRepo.getAll();
@@ -43,5 +49,14 @@ public class DriverService {
             return "Invalid password.";
         }
         return "Login successful.";
+    }
+
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public void reserveSpot(int driverId, int parkingSpotId, int parkingLotId, int duration){
+        parkingSpotService.reserveSpot(parkingSpotId, parkingLotId);
+        Timestamp startTime = new Timestamp(System.currentTimeMillis());
+        Timestamp endTime = new Timestamp(System.currentTimeMillis() + (long) duration *1000*60*60); // duration in hours
+        parkingSpotService.createReservation(driverId, parkingSpotId, parkingLotId, startTime, endTime);
+
     }
 }

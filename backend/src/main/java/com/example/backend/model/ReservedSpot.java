@@ -23,3 +23,5 @@ public class ReservedSpot {
     private int parkingSpotParkingLotId;
     private int parkingSpotId;
 }
+
+
