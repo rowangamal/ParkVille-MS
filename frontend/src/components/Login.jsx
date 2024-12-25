@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Car, Lock, Mail } from 'lucide-react';
+import { Car, Lock, User } from 'lucide-react';
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ username: '', password: '' });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,11 +63,11 @@ const Login = () => {
         {/* Login Form */}
         <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1rem' }}>
           <div style={{ display: 'grid', gap: '0.5rem' }}>
-            <label htmlFor="email" style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}>
-              Email Address
+            <label htmlFor="username" style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}>
+              Username
             </label>
             <div style={{ position: 'relative' }}>
-              <Mail
+              <User
                 style={{
                   position: 'absolute',
                   top: '50%',
@@ -79,10 +79,10 @@ const Login = () => {
                 }}
               />
               <input
-                type="email"
-                name="email"
-                id="email"
-                value={formData.email}
+                type="text"
+                name="username"
+                id="username"
+                value={formData.username}
                 onChange={handleChange}
                 required
                 style={{
@@ -96,7 +96,7 @@ const Login = () => {
                   backgroundColor: '#1a202c',
                   color: '#edf2f7',
                 }}
-                placeholder="Enter your email"
+                placeholder="Enter your username"
               />
             </div>
           </div>

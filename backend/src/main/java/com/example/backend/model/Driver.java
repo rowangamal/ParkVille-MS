@@ -2,7 +2,6 @@ package com.example.backend.model;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-
 @Component
 @Scope("prototype")
 public class Driver {
@@ -14,16 +13,6 @@ public class Driver {
     private String paymentMethod;
 
     public Driver(){
-
-    }
-
-    public Driver(int id, String username, String email, String licensePlateNumber, String password, String paymentMethod) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.licensePlateNumber = licensePlateNumber;
-        this.password = password;
-        this.paymentMethod = paymentMethod;
     }
 
     public int getId() {
