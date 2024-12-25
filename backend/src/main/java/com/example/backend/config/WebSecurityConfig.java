@@ -36,6 +36,9 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/managers/login").permitAll()
                         .requestMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
                         .requestMatchers("/sysadmin/**").hasAuthority(Role.SYS_ADMIN.name())
+                        .requestMatchers("/sendNotification").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/app/notify").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement -> sessionManagement
