@@ -35,5 +35,18 @@ public class ReservedSpotRepo {
         jdbcTemplate.update("update Parking_Spot set status = ? where id = ?", "empty", parkingSpotId);
     }
 
+    public ReservedSpot getReservedSpot(int driverId, int parkingSpotId, int parkingLotId){
+        String sqlStatement = "select * from Reserved_Spot where Driver_id = ? and Parking_Spot_id = ? and Parking_Spot_Parking_Lot_id = ?";
+        return jdbcTemplate.queryForObject(sqlStatement, new Object[]{driverId, parkingSpotId, parkingLotId}, (resultSet, i) -> {
+            return new ReservedSpot(
+                    resultSet.getTimestamp("end_time"),
+                    resultSet.getTimestamp("start_time"),
+                    resultSet.getInt("Driver_id"),
+                    resultSet.getInt("Parking_Spot_Parking_Lot_id"),
+                    resultSet.getInt("Parking_Spot_id")
+            );
+        });
+    }
 
 }
+
