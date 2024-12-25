@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import com.example.backend.model.Driver;
+import com.example.backend.model.ReservedSpot;
 import com.example.backend.repository.DriverRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,9 +17,13 @@ public class DriverService {
 
     @Autowired
     private DriverRepo driverRepo;
-
     @Autowired
     private ParkingSpotService parkingSpotService;
+    @Autowired
+    private ReservedSpotService reservedSpotService;
+    @Autowired
+    private SpotOccupationTimeService spotOccupationTimeService;
+
 
     public String signup(Driver driver) {
         List<Driver> existingDrivers = driverRepo.getAll();
@@ -59,4 +64,12 @@ public class DriverService {
         parkingSpotService.createReservation(driverId, parkingSpotId, parkingLotId, startTime, endTime);
 
     }
+
+    @Transactional
+    public void driverArrival(int driverId, int parkingSpotId, int parkingLotId){
+        parkingSpotService.updateSpotStatus(parkingSpotId, parkingLotId, "occupied");
+        ReservedSpot reservedSpot = reservedSpotService.getReservedSpot(driverId, parkingSpotId, parkingLotId);
+        spotOccupationTimeService.driverArrival(reservedSpot);
+    }
+
 }

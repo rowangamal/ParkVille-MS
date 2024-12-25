@@ -29,8 +29,8 @@ public class ParkingSpotService {
         return parkingSpotRepo.getstatus(spotId, parkingLotId);
     }
 
-    public void emptySpot(int id, int parkingLotId){
-        parkingSpotRepo.updateStatus(id, parkingLotId, "empty");
+    public void updateSpotStatus(int id, int parkingLotId, String status){
+        parkingSpotRepo.updateStatus(id, parkingLotId, status);
     }
 
     public void createReservation(int driverId, int parkingSpotId, int parkingLotId, Timestamp startTime, Timestamp endTime){

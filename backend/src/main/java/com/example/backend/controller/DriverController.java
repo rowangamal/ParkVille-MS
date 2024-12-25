@@ -33,21 +33,6 @@ public class DriverController {
         return new ResponseEntity<>(response, status);
     }
 
-    @PostMapping("/reserve/spot")
-    public ResponseEntity<Object> reserveSpot(@RequestBody Map<String, Integer> request) {
-        int driverId = request.get("driverId");
-        int parkingSpotId = request.get("parkingSpotId");
-        int parkingLotId = request.get("parkingLotId");
-        int duration = request.get("duration");
-        System.out.println("spot id is " + parkingSpotId);
-        System.out.println("lot id is " + parkingLotId);
 
-        try {
-            driverService.reserveSpot(driverId, parkingSpotId, parkingLotId, duration);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
 
 }
