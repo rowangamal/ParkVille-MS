@@ -21,12 +21,18 @@ public class ReservedSpotRepo {
                 reservedSpot.getDriverId(),
                 reservedSpot.getStartTime(),
                 reservedSpot.getEndTime());
-        jdbcTemplate.update("update Parking_Spot set status = ? where id = ?", "reserved", reservedSpot.getParkingSpotId());
+//        jdbcTemplate.update("update Parking_Spot set status = ? where id = ?", "reserved", reservedSpot.getParkingSpotId());
     }
-    public void delete(int id){
-        String sqlStatement = "delete from Reserved_Spot where id = ?";
-        jdbcTemplate.update(sqlStatement, id);
-        jdbcTemplate.update("update Parking_Spot set status = ? where id = ?", "empty", id);
+//    public void delete(int id){
+//        String sqlStatement = "delete from Reserved_Spot where id = ?";
+//        jdbcTemplate.update(sqlStatement, id);
+//        jdbcTemplate.update("update Parking_Spot set status = ? where id = ?", "empty", id);
+//    }
+
+    public void delete(int driverId, int parkingSpotId, int parkingLotId){
+        String sqlStatement = "delete from Reserved_Spot where Driver_id = ? and Parking_Spot_id = ? and Parking_Spot_Parking_Lot_id = ?";
+        jdbcTemplate.update(sqlStatement, driverId, parkingSpotId, parkingLotId);
+        jdbcTemplate.update("update Parking_Spot set status = ? where id = ?", "empty", parkingSpotId);
     }
 
 
