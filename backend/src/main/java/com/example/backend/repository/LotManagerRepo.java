@@ -17,10 +17,10 @@ public class LotManagerRepo {
 
     public void save(LotManager lotManager){
         String sqlStatement = "insert into parking_lot_manager " +
-                "(id, username, email, password) " +
-                "values (?, ?, ?, ?)";
+                "(username, email, password) " +
+                "values ( ?, ?, ?)";
 
-        jdbcTemplate.update(sqlStatement, lotManager.getId(), lotManager.getUsername(), lotManager.getEmail(), lotManager.getPassword());
+        jdbcTemplate.update(sqlStatement,  lotManager.getUsername(), lotManager.getEmail(), lotManager.getPassword());
     }
 
     public List<LotManager> getAll(){

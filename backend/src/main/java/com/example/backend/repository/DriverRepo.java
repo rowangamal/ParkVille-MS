@@ -18,10 +18,10 @@ public class DriverRepo {
 
     public void save(Driver driver){
         String sqlStatement = "insert into Driver " +
-                "(id, username, email, license_plate_number, password, payment_method) " +
-                "values (?, ?, ?, ?, ?, ?)";
+                "(username, email, license_plate_number, password, payment_method) " +
+                "values (?, ?, ?, ?, ?)";
 
-        jdbcTemplate.update(sqlStatement, driver.getId(), driver.getUsername(), driver.getEmail(), driver.getLicensePlateNumber(), driver.getPassword(), driver.getPaymentMethod());
+        jdbcTemplate.update(sqlStatement, driver.getUsername(), driver.getEmail(), driver.getLicensePlateNumber(), driver.getPassword(), driver.getPaymentMethod());
     }
 
     public List<Driver> getAll(){
