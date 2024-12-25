@@ -18,10 +18,10 @@ public class AdministratorRepo {
 
     public void save(Administrator administrator){
         String sqlStatement = "insert into system_adminstrator " +
-                "(id, username, email, password) " +
-                "values (?, ?, ?, ?)";
+                "(username, email, password) " +
+                "values (?, ?, ?)";
 
-        jdbcTemplate.update(sqlStatement, administrator.getId(), administrator.getUsername(), administrator.getEmail(), administrator.getPassword());
+        jdbcTemplate.update(sqlStatement, administrator.getUsername(), administrator.getEmail(), administrator.getPassword());
     }
 
     public List<Administrator> getAll(){

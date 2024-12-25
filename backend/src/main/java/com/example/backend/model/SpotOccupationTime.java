@@ -7,18 +7,19 @@ import lombok.Setter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
+
 @Component
 @Scope("prototype")
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 @Setter
-public class ParkingLot {
+@Getter
+public class SpotOccupationTime {
     private int id;
-    private String location;
-    private int capacity;
-    private double price;
-    private String type;
-    private double revenue;
-    private int ParkingLotManagerid;
+    private int ReservedSpotDriverId;
+    private int ReservedSpotParkingSpotParkingLotId;
+    private int ReservedSpotParkingSpotId;
+    private Timestamp arrivalTime;
+    private Timestamp leaveTime;
 }

@@ -1,5 +1,6 @@
 package com.example.backend.model;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,14 +12,10 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 @Setter
-public class ParkingLot {
+@Getter
+public class ParkingSpot {
     private int id;
-    private String location;
-    private int capacity;
-    private double price;
-    private String type;
-    private double revenue;
-    private int ParkingLotManagerid;
+    private String status;
+    private int ParkingLotId;
 }
