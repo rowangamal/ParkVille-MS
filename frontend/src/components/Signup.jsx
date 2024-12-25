@@ -20,11 +20,11 @@ const Signup = () => {
     paymentMethod: '',
   });
 
+  const [message, setMessage] = useState({ text: '', type: '' });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-
-    // Reset error when the user starts typing
     setErrors({ ...errors, [name]: '' });
   };
 
@@ -40,8 +40,6 @@ const Signup = () => {
     if (!formData.password) {
       newErrors.password = 'Password is required';
     }
-
-    // Validate driver-specific fields
     if (formData.role === 'Driver') {
       if (!formData.licensePlateNumber) {
         newErrors.licensePlateNumber = 'License plate number is required';
@@ -52,14 +50,14 @@ const Signup = () => {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; // Return true if no errors
+    return Object.keys(newErrors).length === 0; 
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) {
-      return; // Stop submission if validation fails
+      return; 
     }
 
     try {
@@ -84,10 +82,13 @@ const Signup = () => {
         response = await axios.post('http://localhost:8080/api/admins/signup', dataToSend);
       }
 
-      alert('Signup successful!');
+      setMessage({ text: 'Signup successful!', type: 'success' });
     } catch (error) {
       console.log(error.response);
-      alert('Error during signup: ' + error.response?.data?.message || error.message);
+      setMessage({
+        text: error.response?.data?.message || 'Error during signup',
+        type: 'error',
+      });
     }
   };
 
@@ -134,6 +135,21 @@ const Signup = () => {
           <h2 style={{ fontSize: '1.75rem', fontWeight: 'bold', color: '#edf2f7' }}>Sign Up</h2>
           <p style={{ color: '#a0aec0', marginTop: '0.5rem' }}>Create your rental account</p>
         </div>
+
+        {message.text && (
+          <div
+            style={{
+              marginBottom: '1rem',
+              padding: '1rem',
+              backgroundColor: message.type === 'success' ? '#38a169' : '#e53e3e',
+              color: '#fff',
+              borderRadius: '0.5rem',
+              textAlign: 'center',
+            }}
+          >
+            {message.text}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1rem' }}>
           <div style={{ display: 'grid', gap: '0.5rem' }}>
@@ -284,12 +300,15 @@ const Signup = () => {
             {errors.password && <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.password}</span>}
           </div>
 
-          {/* License Plate (Only for Driver) */}
+          {/* Driver-specific fields */}
           {formData.role === 'Driver' && (
             <>
               <div style={{ display: 'grid', gap: '0.5rem' }}>
-                <label htmlFor="licensePlate" style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}>
-                  License Plate
+                <label
+                  htmlFor="licensePlateNumber"
+                  style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}
+                >
+                  License Plate Number
                 </label>
                 <input
                   type="text"
@@ -297,9 +316,10 @@ const Signup = () => {
                   id="licensePlateNumber"
                   value={formData.licensePlateNumber}
                   onChange={handleChange}
+                  required
                   style={{
                     width: '100%',
-                    maxWidth: '470px',
+                    maxWidth: '440px',
                     padding: '0.75rem',
                     border: '1px solid #4a5568',
                     borderRadius: '0.5rem',
@@ -308,12 +328,14 @@ const Signup = () => {
                     backgroundColor: '#1a202c',
                     color: '#edf2f7',
                   }}
-                  placeholder="Enter your license plate"
+                  placeholder="Enter your license plate number"
                 />
+                {errors.licensePlateNumber && (
+                  <span style={{ color: 'red', fontSize: '0.8rem' }}>
+                    {errors.licensePlateNumber}
+                  </span>
+                )}
               </div>
-              {errors.licensePlateNumber && (
-                <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.licensePlateNumber}</span>
-              )}
 
               <div style={{ display: 'grid', gap: '0.5rem' }}>
                 <label htmlFor="paymentMethod" style={{ fontSize: '0.9rem', fontWeight: '500', color: '#a0aec0' }}>
@@ -325,9 +347,10 @@ const Signup = () => {
                   id="paymentMethod"
                   value={formData.paymentMethod}
                   onChange={handleChange}
+                  required
                   style={{
                     width: '100%',
-                    maxWidth: '470px',
+                    maxWidth: '440px',
                     padding: '0.75rem',
                     border: '1px solid #4a5568',
                     borderRadius: '0.5rem',
@@ -338,29 +361,38 @@ const Signup = () => {
                   }}
                   placeholder="Enter your payment method"
                 />
+                {errors.paymentMethod && (
+                  <span style={{ color: 'red', fontSize: '0.8rem' }}>
+                    {errors.paymentMethod}
+                  </span>
+                )}
               </div>
-              {errors.paymentMethod && (
-                <span style={{ color: 'red', fontSize: '0.8rem' }}>{errors.paymentMethod}</span>
-              )}
             </>
           )}
 
           <button
             type="submit"
             style={{
-              padding: '0.75rem',
-              backgroundColor: '#2563eb',
-              borderRadius: '0.5rem',
-              color: '#ffffff',
-              fontWeight: '600',
+              width: '100%',
+              padding: '1rem',
               fontSize: '1rem',
+              fontWeight: '600',
+              color: '#fff',
+              backgroundColor: '#2563eb',
               border: 'none',
+              borderRadius: '0.5rem',
               cursor: 'pointer',
               transition: 'background-color 0.2s',
             }}
           >
             Sign Up
           </button>
+          <p style={{ marginTop: '1rem', textAlign: 'center', fontSize: '0.85rem', color: '#a0aec0' }}>
+            Already have an account?{' '}
+            <a href="/login" style={{ fontWeight: '500', color: '#63b3ed' }}>
+              Sign In
+            </a>
+          </p>
         </form>
       </div>
     </div>
