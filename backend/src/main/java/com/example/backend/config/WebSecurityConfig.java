@@ -30,6 +30,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/drivers/signup").permitAll()
                         .requestMatchers("/api/drivers/login").permitAll()
+                        .requestMatchers("/api/drivers/**").permitAll()
                         .requestMatchers("/api/admins/signup").permitAll()
                         .requestMatchers("/api/admins/login").permitAll()
                         .requestMatchers("/api/managers/signup").permitAll()
