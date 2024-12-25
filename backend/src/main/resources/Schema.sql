@@ -110,8 +110,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `parkdb`.`Spot_Occupation_Time` (
   `arrival_time` TIMESTAMP(3) NOT NULL,
-  `leave_time` TIMESTAMP(3) NOT NULL,
-  `id` INT NOT NULL,
+  `leave_time` TIMESTAMP(3) NULL,
   `Reserved_Spot_Driver_id` INT NOT NULL,
   `Reserved_Spot_Parking_Spot_Parking_Lot_id` INT NOT NULL,
   `Reserved_Spot_Parking_Spot_id` INT NOT NULL,
