@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
-public class LotManager {
+public class LotManager  implements AppUser{
     private int id;
     private String username;
     private String email;
@@ -48,5 +48,10 @@ public class LotManager {
     @Override
     public String toString() {
         return "LotManager{id=%d, username='%s', email='%s', password='%s'}".formatted(id, username, email, password);
+    }
+
+    @Override
+    public String getRole() {
+        return "ROLE_MANAGER";
     }
 }

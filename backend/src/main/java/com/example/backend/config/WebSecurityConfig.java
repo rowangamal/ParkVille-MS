@@ -2,6 +2,7 @@ package com.example.backend.config;
 
 import com.example.backend.enums.Role;
 //import com.example.backend.services.JWTFilter;
+import com.example.backend.service.JWTFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,30 +21,30 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-//    @Autowired
-//    private JWTFilter jwtFilter;
+    @Autowired
+    private JWTFilter jwtFilter;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/**").permitAll()
+//                        .requestMatchers("/**").permitAll()
                         .requestMatchers("/api/drivers/signup").permitAll()
                         .requestMatchers("/api/drivers/login").permitAll()
-                        .requestMatchers("/api/drivers/**").permitAll()
                         .requestMatchers("/api/admins/signup").permitAll()
                         .requestMatchers("/api/admins/login").permitAll()
                         .requestMatchers("/api/managers/signup").permitAll()
                         .requestMatchers("/api/managers/login").permitAll()
-                        .requestMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers("/sysadmin/**").hasAuthority(Role.SYS_ADMIN.name())
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/managers/**").hasAuthority("ROLE_MANAGER")
+                        .requestMatchers("/api/admins/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("api/drivers/**").hasAuthority("ROLE_DRIVER")
+//                        .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
     // talks to the auth

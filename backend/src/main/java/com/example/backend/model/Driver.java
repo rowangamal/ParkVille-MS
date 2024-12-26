@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 
-public class Driver {
+public class Driver implements AppUser {
     private int id;
     private String username;
     private String email;
@@ -66,5 +66,10 @@ public class Driver {
     @Override
     public String toString() {
         return "Driver{id=%d, username='%s', email='%s', licensePlateNumber='%s', password='%s', paymentMethod='%s'}".formatted(id, username, email, licensePlateNumber, password, paymentMethod);
+    }
+
+    @Override
+    public String getRole() {
+        return "ROLE_DRIVER";
     }
 }
