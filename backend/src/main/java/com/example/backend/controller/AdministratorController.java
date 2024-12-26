@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 import com.example.backend.DTOs.LoginRequestDTO;
+import com.example.backend.DTOs.SuccessLoginDTO;
 import com.example.backend.model.Administrator;
 import com.example.backend.service.AdministratorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +24,12 @@ public class AdministratorController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequestDTO loginRequest) {
-        String message = administratorService.login(loginRequest.getUsername(), loginRequest.getPassword());
-        Map<String, String> response = new HashMap<>();
-        response.put("message", message);
-        HttpStatus status = message.equals("Login successful.") ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
-        return new ResponseEntity<>(response, status);
+    public ResponseEntity<Object> login(@RequestBody LoginRequestDTO loginRequest) {
+        try{
+            SuccessLoginDTO successLoginDTO = administratorService.login(loginRequest.getUsername(), loginRequest.getPassword());
+            return ResponseEntity.status(HttpStatus.OK).body(successLoginDTO);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

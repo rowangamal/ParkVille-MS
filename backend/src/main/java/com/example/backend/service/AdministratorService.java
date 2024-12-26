@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import com.example.backend.DTOs.SuccessLoginDTO;
 import com.example.backend.model.Administrator;
 import com.example.backend.repository.AdministratorRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ public class AdministratorService {
 
     @Autowired
     private AdministratorRepo administratorRepo;
+
+    @Autowired
+    private JWTService jwtService;
 
     public String signup(Administrator administrator) {
         List<Administrator> existingAdmins = administratorRepo.getAll();
@@ -28,21 +32,22 @@ public class AdministratorService {
         return "Signup successful.";
     }
 
-    public String login(String username, String password) {
+    public SuccessLoginDTO login(String username, String password) {
         List<Administrator> existingAdmins = administratorRepo.getAll();
         Optional<Administrator> matchingAdmin = existingAdmins.stream()
                 .filter(a -> a.getUsername().equals(username))
                 .findFirst();
 
         if (matchingAdmin.isEmpty()) {
-            return "Invalid username.";
+            throw  new RuntimeException("Invalid email or password.");
         }
 
         Administrator administrator = matchingAdmin.get();
         if (!administrator.getPassword().equals(password)) {
-            return "Invalid password.";
+            throw  new RuntimeException("Invalid email or password.");
         }
 
-        return "Login successful.";
+        String jwt = jwtService.generateToken(administrator.getId(), administrator.getRole());
+        return new SuccessLoginDTO(administrator.getId(), administrator.getUsername(), administrator.getRole(), jwt);
     }
 }

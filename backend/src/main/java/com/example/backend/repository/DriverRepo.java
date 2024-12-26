@@ -42,4 +42,18 @@ public class DriverRepo {
         };
         return jdbcTemplate.query(sqlStatement, mapper);
     }
+
+    public Driver getDriverById(int id){
+        String sqlStatement = "select * from Driver where id = ?";
+        return jdbcTemplate.queryForObject(sqlStatement, new Object[]{id}, (resultSet, i) -> {
+            Driver driver = new Driver();
+            driver.setId(resultSet.getInt("id"));
+            driver.setUsername(resultSet.getString("username"));
+            driver.setEmail(resultSet.getString("email"));
+            driver.setLicensePlateNumber(resultSet.getString("license_plate_number"));
+            driver.setPassword(resultSet.getString("password"));
+            driver.setPaymentMethod(resultSet.getString("payment_method"));
+            return driver;
+        });
+    }
 }

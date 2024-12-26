@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import com.example.backend.DTOs.SuccessLoginDTO;
 import com.example.backend.model.Driver;
 import com.example.backend.model.ReservedSpot;
 import com.example.backend.repository.DriverRepo;
@@ -25,6 +26,9 @@ public class DriverService {
     private SpotOccupationTimeService spotOccupationTimeService;
 
 
+    @Autowired
+    private JWTService jwtService;
+
     public String signup(Driver driver) {
         List<Driver> existingDrivers = driverRepo.getAll();
         Optional<Driver> existingDriver = existingDrivers.stream()
@@ -39,21 +43,23 @@ public class DriverService {
         return "Signup successful.";
     }
 
-    public String login(String username, String password) {
+    public SuccessLoginDTO login(String username, String password) {
         List<Driver> existingDrivers = driverRepo.getAll();
         Optional<Driver> matchingDriver = existingDrivers.stream()
                 .filter(d -> d.getUsername().equals(username))
                 .findFirst();
 
+        System.out.println(matchingDriver);
         if (matchingDriver.isEmpty()) {
-            return "Invalid username.";
+            throw  new RuntimeException("Invalid email or password.");
         }
 
         Driver driver = matchingDriver.get();
         if (!driver.getPassword().equals(password)) {
-            return "Invalid password.";
+            throw new RuntimeException("Invalid email or password.");
         }
-        return "Login successful.";
+        String jwt = jwtService.generateToken(driver.getId(), driver.getRole());
+        return new SuccessLoginDTO(driver.getId(), driver.getUsername(), driver.getRole(), jwt);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -70,6 +76,14 @@ public class DriverService {
         parkingSpotService.updateSpotStatus(parkingSpotId, parkingLotId, "occupied");
         ReservedSpot reservedSpot = reservedSpotService.getReservedSpot(driverId, parkingSpotId, parkingLotId);
         spotOccupationTimeService.driverArrival(reservedSpot);
+    }
+
+    @Transactional
+    public void driverDeparture(int driverId, int parkingSpotId, int parkingLotId){
+        ReservedSpot reservedSpot = reservedSpotService.getReservedSpot(driverId, parkingSpotId, parkingLotId);
+        spotOccupationTimeService.driverDeparture(reservedSpot);
+        parkingSpotService.updateSpotStatus(parkingSpotId, parkingLotId, "empty");
+//        reservedSpotService.delete(driverId, parkingSpotId, parkingLotId);
     }
 
 }
