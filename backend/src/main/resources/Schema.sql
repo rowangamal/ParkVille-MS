@@ -3,11 +3,7 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
--- -----------------------------------------------------
--- Schema parkdb
--- -----------------------------------------------------
 
--- -----------------------------------------------------
 -- Schema parkdb
 -- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `parkdb` DEFAULT CHARACTER SET utf8 ;
@@ -34,7 +30,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `parkdb`.`Parking_Lot` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `location` VARCHAR(256) NOT NULL,
+  `longitude` VARCHAR(256) NOT NULL,
+  `latitude` VARCHAR(256) NOT NULL,
   `capacity` DECIMAL NOT NULL,
   `price` DECIMAL NOT NULL,
   `type` VARCHAR(256) NOT NULL,
@@ -86,10 +83,14 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `parkdb`.`Reserved_Spot` (
   `end_time` TIMESTAMP(3) NOT NULL,
   `start_time` TIMESTAMP(3) NOT NULL,
+  `arrival_time` TIMESTAMP(3) NULL,
+  `leave_time` TIMESTAMP(3) NULL,
   `Driver_id` INT NOT NULL,
   `Parking_Spot_Parking_Lot_id` INT NOT NULL,
   `Parking_Spot_id` INT NOT NULL,
-  PRIMARY KEY (`Driver_id`, `Parking_Spot_Parking_Lot_id`, `Parking_Spot_id`),
+  `price` DECIMAL NOT NULL,
+  `penalty` DECIMAL NULL,
+  PRIMARY KEY (`Driver_id`, `Parking_Spot_Parking_Lot_id`, `Parking_Spot_id`, `start_time`),
   INDEX `fk_Reserved_Spot_Driver1_idx` (`Driver_id` ASC) VISIBLE,
   INDEX `fk_Reserved_Spot_Parking_Spot1_idx` (`Parking_Spot_Parking_Lot_id` ASC, `Parking_Spot_id` ASC) VISIBLE,
   CONSTRAINT `fk_Reserved_Spot_Driver1`
@@ -104,24 +105,6 @@ CREATE TABLE IF NOT EXISTS `parkdb`.`Reserved_Spot` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-
--- -----------------------------------------------------
--- Table `parkdb`.`Spot_Occupation_Time`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `parkdb`.`Spot_Occupation_Time` (
-  `arrival_time` TIMESTAMP(3) NOT NULL,
-  `leave_time` TIMESTAMP(3) NOT NULL,
-  `id` INT NOT NULL,
-  `Reserved_Spot_Driver_id` INT NOT NULL,
-  `Reserved_Spot_Parking_Spot_Parking_Lot_id` INT NOT NULL,
-  `Reserved_Spot_Parking_Spot_id` INT NOT NULL,
-  PRIMARY KEY (`Reserved_Spot_Driver_id`, `Reserved_Spot_Parking_Spot_Parking_Lot_id`, `Reserved_Spot_Parking_Spot_id`, `id`),
-  CONSTRAINT `fk_Spot_Occupation_Time_Reserved_Spot1`
-    FOREIGN KEY (`Reserved_Spot_Driver_id` , `Reserved_Spot_Parking_Spot_Parking_Lot_id` , `Reserved_Spot_Parking_Spot_id`)
-    REFERENCES `parkdb`.`Reserved_Spot` (`Driver_id` , `Parking_Spot_Parking_Lot_id` , `Parking_Spot_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
-ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
@@ -138,23 +121,6 @@ CREATE TABLE IF NOT EXISTS `parkdb`.`System_Adminstrator` (
 ENGINE = InnoDB;
 
 
--- -----------------------------------------------------
--- Table `parkdb`.`Penalty`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `parkdb`.`Penalty` (
-  `intial_penalty` DECIMAL NOT NULL,
-  `id` INT NOT NULL,
-  `Reserved_Spot_Driver_id` INT NOT NULL,
-  `Reserved_Spot_Parking_Spot_Parking_Lot_id` INT NOT NULL,
-  `Reserved_Spot_Parking_Spot_id` INT NOT NULL,
-  PRIMARY KEY (`id`, `Reserved_Spot_Driver_id`, `Reserved_Spot_Parking_Spot_Parking_Lot_id`, `Reserved_Spot_Parking_Spot_id`),
-  INDEX `fk_Penalty_Reserved_Spot1_idx` (`Reserved_Spot_Driver_id` ASC, `Reserved_Spot_Parking_Spot_Parking_Lot_id` ASC, `Reserved_Spot_Parking_Spot_id` ASC) VISIBLE,
-  CONSTRAINT `fk_Penalty_Reserved_Spot1`
-    FOREIGN KEY (`Reserved_Spot_Driver_id` , `Reserved_Spot_Parking_Spot_Parking_Lot_id` , `Reserved_Spot_Parking_Spot_id`)
-    REFERENCES `parkdb`.`Reserved_Spot` (`Driver_id` , `Parking_Spot_Parking_Lot_id` , `Parking_Spot_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
-ENGINE = InnoDB;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;

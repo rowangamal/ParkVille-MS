@@ -14,11 +14,11 @@ public class ParkingLotRepo {
 
     public void save(ParkingLot parkingLot ){
         String sqlStatement = "insert into Parking_Lot " +
-                "(location, capacity, price, type , revenue , Parking_Lot_Manager_id ) " +
-                "values (?, ?, ?, ?)";
+                "(longitude, latitude , capacity, price, type , revenue , Parking_Lot_Manager_id ) " +
+                "values (?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sqlStatement,
-                parkingLot.getId() ,
-                parkingLot.getLocation(),
+                parkingLot.getLongitude(),
+                parkingLot.getLatitude(),
                 parkingLot.getCapacity(),
                 parkingLot.getPrice(),
                 parkingLot.getType(),

@@ -39,4 +39,16 @@ public class LotManagerRepo {
         };
         return jdbcTemplate.query(sqlStatement, mapper);
     }
+
+    public LotManager findManagerById(int id){
+        String sqlStatement = "select * from parking_lot_manager where id = ?";
+        return jdbcTemplate.queryForObject(sqlStatement, new Object[]{id}, (resultSet, i) -> {
+            LotManager lotManager = new LotManager();
+            lotManager.setId(resultSet.getInt("id"));
+            lotManager.setUsername(resultSet.getString("username"));
+            lotManager.setEmail(resultSet.getString("email"));
+            lotManager.setPassword(resultSet.getString("password"));
+            return lotManager;
+        });
+    }
 }

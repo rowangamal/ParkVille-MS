@@ -40,4 +40,16 @@ public class AdministratorRepo {
         };
         return jdbcTemplate.query(sqlStatement, mapper);
     }
+
+    public Administrator findAdminById(int id){
+        String sqlStatement = "select * from system_adminstrator where id = ?";
+        return jdbcTemplate.queryForObject(sqlStatement, new Object[]{id}, (resultSet, i) -> {
+            Administrator administrator = new Administrator();
+            administrator.setId(resultSet.getInt("id"));
+            administrator.setUsername(resultSet.getString("username"));
+            administrator.setEmail(resultSet.getString("email"));
+            administrator.setPassword(resultSet.getString("password"));
+            return administrator;
+        });
+    }
 }

@@ -15,7 +15,8 @@ import org.springframework.stereotype.Component;
 @Setter
 public class ParkingLot {
     private int id;
-    private String location;
+    private String longitude;
+    private String latitude;
     private int capacity;
     private double price;
     private String type;

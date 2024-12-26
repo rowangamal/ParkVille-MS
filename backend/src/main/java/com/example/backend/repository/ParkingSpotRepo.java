@@ -11,9 +11,24 @@ public class ParkingSpotRepo {
     private JdbcTemplate jdbcTemplate;
 
 
-    private void updateStatus(int id, String status){
-        String sqlStatement = "update Parking_Spot set status = ? where id = ?";
-        jdbcTemplate.update(sqlStatement, status, id);
+    public void updateStatus(int id, int parkingLotId,  String status){
+        String sqlStatement = "update Parking_Spot set status = ? where id = ? and Parking_Lot_id = ?";
+        jdbcTemplate.update(sqlStatement, status, id, parkingLotId);
+    }
+
+    public String getstatus(int id, int parkingLotId){
+        String sqlStatement = "select status from Parking_Spot where id = ? and Parking_Lot_id = ?";
+        return jdbcTemplate.queryForObject(sqlStatement, String.class, id, parkingLotId);
+    }
+
+    public int countEmptySpots(int parkingLotId){
+        String sqlStatement = "select count(*) from Parking_Spot where status = 'empty' and Parking_Lot_id = ?";
+        return jdbcTemplate.queryForObject(sqlStatement, Integer.class, parkingLotId);
+    }
+
+    public int countAllSpots(int parkingLotId){
+        String sqlStatement = "select count(*) from Parking_Spot where Parking_Lot_id = ?";
+        return jdbcTemplate.queryForObject(sqlStatement, Integer.class, parkingLotId);
     }
 
 

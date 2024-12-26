@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
-public class Administrator {
+public class Administrator implements AppUser{
     private int id;
     private String username;
     private String email;
@@ -48,6 +48,10 @@ public class Administrator {
     @Override
     public String toString() {
         return "Administrator{id=%d, username='%s', email='%s', password='%s'}".formatted(id, username, email, password);
+    }
+    @Override
+    public String getRole() {
+        return "ROLE_ADMIN";
     }
 }
 

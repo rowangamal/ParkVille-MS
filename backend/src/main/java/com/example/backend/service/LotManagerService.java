@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import com.example.backend.DTOs.SuccessLoginDTO;
 import com.example.backend.model.LotManager;
 import com.example.backend.repository.LotManagerRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import java.util.Optional;
 public class LotManagerService {
     @Autowired
     private LotManagerRepo lotManagerRepo;
+    @Autowired
+    private JWTService jwtService;
 
     public String signup(LotManager lotManager) {
         List<LotManager> existingLotManagers = lotManagerRepo.getAll();
@@ -27,20 +30,21 @@ public class LotManagerService {
         return "Signup successful.";
     }
 
-    public String login(String username, String password) {
+    public SuccessLoginDTO login(String username, String password) {
         List<LotManager> existingLotManagers = lotManagerRepo.getAll();
         Optional<LotManager> matchingManager = existingLotManagers.stream()
                 .filter(l -> l.getUsername().equals(username))
                 .findFirst();
 
         if (matchingManager.isEmpty()) {
-            return "Invalid username.";
+            throw  new RuntimeException("Invalid email or password.");
         }
 
         LotManager lotManager = matchingManager.get();
         if (!lotManager.getPassword().equals(password)) {
-            return "Invalid password.";
+            throw  new RuntimeException("Invalid email or password.");
         }
-        return "Login successful.";
+        String jwt = jwtService.generateToken(lotManager.getId(), lotManager.getRole());
+        return new SuccessLoginDTO(lotManager.getId(), lotManager.getUsername(), lotManager.getRole(), jwt);
     }
 }

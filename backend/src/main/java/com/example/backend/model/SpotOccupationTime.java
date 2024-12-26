@@ -16,10 +16,18 @@ import java.sql.Timestamp;
 @Setter
 @Getter
 public class SpotOccupationTime {
-    private int id;
     private int ReservedSpotDriverId;
     private int ReservedSpotParkingSpotParkingLotId;
     private int ReservedSpotParkingSpotId;
     private Timestamp arrivalTime;
     private Timestamp leaveTime;
+
+    public SpotOccupationTime(int reservedSpotDriverId, int reservedSpotParkingSpotParkingLotId,
+                              int reservedSpotParkingSpotId, Timestamp arrivalTime) {
+        ReservedSpotDriverId = reservedSpotDriverId;
+        ReservedSpotParkingSpotParkingLotId = reservedSpotParkingSpotParkingLotId;
+        ReservedSpotParkingSpotId = reservedSpotParkingSpotId;
+        this.arrivalTime = arrivalTime;
+    }
 }
+
