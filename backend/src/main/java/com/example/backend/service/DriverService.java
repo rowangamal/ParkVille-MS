@@ -25,10 +25,6 @@ public class DriverService {
     private ParkingSpotService parkingSpotService;
     @Autowired
     private ReservedSpotService reservedSpotService;
-    @Autowired
-    private SpotOccupationTimeService spotOccupationTimeService;
-    @Autowired
-    private ParkingLotService parkingLotService;
 
 
     @Autowired
@@ -87,7 +83,7 @@ public class DriverService {
         parkingSpotService.reserveSpot(parkingSpotId, parkingLotId);
         Timestamp startTime = new Timestamp(System.currentTimeMillis());
         Timestamp endTime = new Timestamp(System.currentTimeMillis() + (long) duration *1000*60*60); // duration in hours
-        ReservedSpot reservedSpot = parkingLotService.dynamicPricing(new ReservedSpot(startTime, endTime, this.getDriverId(), parkingLotId, parkingSpotId));
+        ReservedSpot reservedSpot = parkingSpotService.dynamicPricing(new ReservedSpot(endTime, startTime, this.getDriverId(), parkingLotId, parkingSpotId));
         parkingSpotService.createReservation(reservedSpot);
 
     }
@@ -96,15 +92,14 @@ public class DriverService {
     public void driverArrival(int parkingSpotId, int parkingLotId){
         parkingSpotService.updateSpotStatus(parkingSpotId, parkingLotId, "occupied");
         ReservedSpot reservedSpot = reservedSpotService.getReservedSpot(this.getDriverId(), parkingSpotId, parkingLotId);
-        spotOccupationTimeService.driverArrival(reservedSpot);
+        reservedSpotService.updateArrivalTime(reservedSpot);
     }
 
     @Transactional
-    public void driverDeparture(int driverId, int parkingSpotId, int parkingLotId){
-        ReservedSpot reservedSpot = reservedSpotService.getReservedSpot(driverId, parkingSpotId, parkingLotId);
-        spotOccupationTimeService.driverDeparture(reservedSpot);
+    public void driverDeparture(int parkingSpotId, int parkingLotId){
+        ReservedSpot reservedSpot = reservedSpotService.getReservedSpot(this.getDriverId(), parkingSpotId, parkingLotId);
+        reservedSpotService.updateLeaveTime(reservedSpot);
         parkingSpotService.updateSpotStatus(parkingSpotId, parkingLotId, "empty");
-//        reservedSpotService.delete(driverId, parkingSpotId, parkingLotId);
     }
 
 }

@@ -55,5 +55,15 @@ public class ReservedSpotRepo {
         });
     }
 
+    public void updateArrivalTime(ReservedSpot reservedSpot){
+        String sqlStatement = "update Reserved_Spot set arrival_time = ? where Driver_id = ? and Parking_Spot_id = ? and Parking_Spot_Parking_Lot_id = ?";
+        jdbcTemplate.update(sqlStatement, reservedSpot.getArrivalTime(), reservedSpot.getDriverId(), reservedSpot.getParkingSpotId(), reservedSpot.getParkingSpotParkingLotId());
+    }
+
+    public void updateLeaveTime(ReservedSpot reservedSpot){
+        String sqlStatement = "update Reserved_Spot set leave_time = ? where Driver_id = ? and Parking_Spot_id = ? and Parking_Spot_Parking_Lot_id = ?";
+        jdbcTemplate.update(sqlStatement, reservedSpot.getLeaveTime(), reservedSpot.getDriverId(), reservedSpot.getParkingSpotId(), reservedSpot.getParkingSpotParkingLotId());
+    }
+
 }
 

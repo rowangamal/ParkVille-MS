@@ -5,6 +5,8 @@ import com.example.backend.repository.ReservedSpotRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+
 @Service
 public class ReservedSpotService {
     @Autowired
@@ -17,4 +19,20 @@ public class ReservedSpotService {
     public void delete(int driverId, int parkingSpotId, int parkingLotId){
         reservedSpotRepo.delete(driverId, parkingSpotId, parkingLotId);
     }
+
+    public void createReservation(ReservedSpot reservedSpot){
+        reservedSpotRepo.save(reservedSpot);
+    }
+
+    public void updateArrivalTime(ReservedSpot reservedSpot){
+        reservedSpot.setArrivalTime(new Timestamp(System.currentTimeMillis()));
+        reservedSpotRepo.updateArrivalTime(reservedSpot);
+    }
+
+    public void updateLeaveTime(ReservedSpot reservedSpot){
+        reservedSpot.setLeaveTime(new Timestamp(System.currentTimeMillis()));
+        reservedSpotRepo.updateLeaveTime(reservedSpot);
+    }
+
+
 }
