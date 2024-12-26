@@ -18,4 +18,10 @@ public class SpotOccupationTimeService {
                 reservedSpot.getParkingSpotId(), new Timestamp(System.currentTimeMillis()));
         spotOccupationTimeRepo.save(spotOccupationTime);
     }
+
+    public void driverDeparture(ReservedSpot reservedSpot) {
+        SpotOccupationTime spotOccupationTime = spotOccupationTimeRepo.getSpotOccupationTime(reservedSpot.getDriverId(), reservedSpot.getParkingSpotParkingLotId(),
+                reservedSpot.getParkingSpotId());
+        spotOccupationTimeRepo.UpdateLeaveTime(spotOccupationTime, new Timestamp(System.currentTimeMillis()));
+    }
 }

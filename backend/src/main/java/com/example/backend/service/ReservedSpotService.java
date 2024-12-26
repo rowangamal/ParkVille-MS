@@ -13,4 +13,8 @@ public class ReservedSpotService {
     public ReservedSpot getReservedSpot(int driverId, int parkingSpotId, int parkingLotId){
         return reservedSpotRepo.getReservedSpot(driverId, parkingSpotId, parkingLotId);
     }
+
+    public void delete(int driverId, int parkingSpotId, int parkingLotId){
+        reservedSpotRepo.delete(driverId, parkingSpotId, parkingLotId);
+    }
 }

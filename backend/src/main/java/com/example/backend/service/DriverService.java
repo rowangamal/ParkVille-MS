@@ -1,10 +1,13 @@
 package com.example.backend.service;
 
 import com.example.backend.DTOs.SuccessLoginDTO;
+import com.example.backend.model.CustomUserDetails;
 import com.example.backend.model.Driver;
 import com.example.backend.model.ReservedSpot;
 import com.example.backend.repository.DriverRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,8 @@ public class DriverService {
     private ReservedSpotService reservedSpotService;
     @Autowired
     private SpotOccupationTimeService spotOccupationTimeService;
+    @Autowired
+    private ParkingLotService parkingLotService;
 
 
     @Autowired
@@ -62,19 +67,35 @@ public class DriverService {
         return new SuccessLoginDTO(driver.getId(), driver.getUsername(), driver.getRole(), jwt);
     }
 
+    public int getDriverId(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        /*
+         * If the user is not authenticated or the principal is not an instance of UserDetail, throw an UnauthorizedAccessException
+         * This case should not happen, because it means caller expects authenticated user to be present
+         * We would not have reached this point if the user was not authenticated
+         * but for security reasons, we should check this case
+         */
+        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+            throw new RuntimeException("User is not authenticated or invalid principal");
+        }
+        return ((CustomUserDetails)authentication.getPrincipal()).getUserId();
+    }
+
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void reserveSpot(int driverId, int parkingSpotId, int parkingLotId, int duration){
+    public void reserveSpot(int parkingSpotId, int parkingLotId, int duration){
+
         parkingSpotService.reserveSpot(parkingSpotId, parkingLotId);
         Timestamp startTime = new Timestamp(System.currentTimeMillis());
         Timestamp endTime = new Timestamp(System.currentTimeMillis() + (long) duration *1000*60*60); // duration in hours
-        parkingSpotService.createReservation(driverId, parkingSpotId, parkingLotId, startTime, endTime);
+        ReservedSpot reservedSpot = parkingLotService.dynamicPricing(new ReservedSpot(startTime, endTime, this.getDriverId(), parkingLotId, parkingSpotId));
+        parkingSpotService.createReservation(reservedSpot);
 
     }
 
     @Transactional
-    public void driverArrival(int driverId, int parkingSpotId, int parkingLotId){
+    public void driverArrival(int parkingSpotId, int parkingLotId){
         parkingSpotService.updateSpotStatus(parkingSpotId, parkingLotId, "occupied");
-        ReservedSpot reservedSpot = reservedSpotService.getReservedSpot(driverId, parkingSpotId, parkingLotId);
+        ReservedSpot reservedSpot = reservedSpotService.getReservedSpot(this.getDriverId(), parkingSpotId, parkingLotId);
         spotOccupationTimeService.driverArrival(reservedSpot);
     }
 

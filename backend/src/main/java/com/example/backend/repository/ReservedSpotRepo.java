@@ -13,14 +13,16 @@ public class ReservedSpotRepo {
 
     public void save(ReservedSpot reservedSpot){
         String sqlStatement = "insert into Reserved_Spot " +
-                "(Parking_Spot_id, Parking_Spot_Parking_Lot_id ,Driver_id ,start_time , end_time)" +
-                "values (?, ? , ? , ? , ?)";
+                "(Parking_Spot_id, Parking_Spot_Parking_Lot_id ,Driver_id ,start_time , end_time, price)" +
+                "values (?, ? , ? , ? , ?, ?)";
         jdbcTemplate.update(sqlStatement,
                 reservedSpot.getParkingSpotId(),
                 reservedSpot.getParkingSpotParkingLotId(),
                 reservedSpot.getDriverId(),
                 reservedSpot.getStartTime(),
-                reservedSpot.getEndTime());
+                reservedSpot.getEndTime(),
+                reservedSpot.getPrice());
+
 //        jdbcTemplate.update("update Parking_Spot set status = ? where id = ?", "reserved", reservedSpot.getParkingSpotId());
     }
 //    public void delete(int id){
@@ -41,9 +43,14 @@ public class ReservedSpotRepo {
             return new ReservedSpot(
                     resultSet.getTimestamp("end_time"),
                     resultSet.getTimestamp("start_time"),
+                    resultSet.getTimestamp("arrival_time"),
+                    resultSet.getTimestamp("leave_time"),
                     resultSet.getInt("Driver_id"),
                     resultSet.getInt("Parking_Spot_Parking_Lot_id"),
-                    resultSet.getInt("Parking_Spot_id")
+                    resultSet.getInt("Parking_Spot_id"),
+                    resultSet.getDouble("price"),
+                    resultSet.getDouble("penalty")
+
             );
         });
     }

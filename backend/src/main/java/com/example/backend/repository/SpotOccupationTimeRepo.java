@@ -32,6 +32,18 @@ public class SpotOccupationTimeRepo {
 //        jdbcTemplate.update("update Parking_Spot set status = ? where id = ?", "empty", id);
     }
 
+    public SpotOccupationTime getSpotOccupationTime(int driverId, int parkingSpotParkingLotId, int parkingSpotId){
+        String sqlStatement = "select * from Spot_Occupation_Time where Reserved_Spot_Driver_id = ? and Reserved_Spot_Parking_Spot_Parking_Lot_id = ? and Reserved_Spot_Parking_Spot_id = ?";
+        return jdbcTemplate.queryForObject(sqlStatement, new Object[]{driverId, parkingSpotParkingLotId, parkingSpotId}, (resultSet, i) -> {
+            return new SpotOccupationTime(
+                    resultSet.getInt("Reserved_Spot_Driver_id"),
+                    resultSet.getInt("Reserved_Spot_Parking_Spot_id"),
+                    resultSet.getInt("Reserved_Spot_Parking_Spot_Parking_Lot_id"),
+                    resultSet.getTimestamp("arrival_time")
+            );
+        });
+    }
+
 
 
 }

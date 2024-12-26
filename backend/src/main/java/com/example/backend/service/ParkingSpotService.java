@@ -33,9 +33,17 @@ public class ParkingSpotService {
         parkingSpotRepo.updateStatus(id, parkingLotId, status);
     }
 
-    public void createReservation(int driverId, int parkingSpotId, int parkingLotId, Timestamp startTime, Timestamp endTime){
-        ReservedSpot reservedSpot = new ReservedSpot(startTime, endTime, driverId, parkingLotId, parkingSpotId);
+    public void createReservation(ReservedSpot reservedSpot){
         reservedSpotRepo.save(reservedSpot);
     }
+
+    public int countEmptySpots(int parkingLotId){
+        return parkingSpotRepo.countEmptySpots(parkingLotId);
+    }
+
+    public int countAllSpots(int parkingLotId){
+        return parkingSpotRepo.countAllSpots(parkingLotId);
+    }
+
 
 }

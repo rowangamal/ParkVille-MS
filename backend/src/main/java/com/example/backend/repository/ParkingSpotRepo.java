@@ -21,6 +21,15 @@ public class ParkingSpotRepo {
         return jdbcTemplate.queryForObject(sqlStatement, String.class, id, parkingLotId);
     }
 
+    public int countEmptySpots(int parkingLotId){
+        String sqlStatement = "select count(*) from Parking_Spot where status = 'empty' and Parking_Lot_id = ?";
+        return jdbcTemplate.queryForObject(sqlStatement, Integer.class, parkingLotId);
+    }
+
+    public int countAllSpots(int parkingLotId){
+        String sqlStatement = "select count(*) from Parking_Spot where Parking_Lot_id = ?";
+        return jdbcTemplate.queryForObject(sqlStatement, Integer.class, parkingLotId);
+    }
 
 
 }
