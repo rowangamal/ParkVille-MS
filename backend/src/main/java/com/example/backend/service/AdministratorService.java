@@ -2,8 +2,11 @@ package com.example.backend.service;
 
 import com.example.backend.DTOs.SuccessLoginDTO;
 import com.example.backend.model.Administrator;
+import com.example.backend.model.CustomUserDetails;
 import com.example.backend.repository.AdministratorRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,5 +52,13 @@ public class AdministratorService {
 
         String jwt = jwtService.generateToken(administrator.getId(), administrator.getRole());
         return new SuccessLoginDTO(administrator.getId(), administrator.getUsername(), administrator.getRole(), jwt);
+    }
+
+    public int getAdministratorId(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+            throw new RuntimeException("User is not authenticated or invalid principal");
+        }
+        return ((CustomUserDetails)authentication.getPrincipal()).getUserId();
     }
 }

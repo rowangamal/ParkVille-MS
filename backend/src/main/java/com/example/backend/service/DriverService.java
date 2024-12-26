@@ -69,12 +69,6 @@ public class DriverService {
 
     public int getDriverId(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        /*
-         * If the user is not authenticated or the principal is not an instance of UserDetail, throw an UnauthorizedAccessException
-         * This case should not happen, because it means caller expects authenticated user to be present
-         * We would not have reached this point if the user was not authenticated
-         * but for security reasons, we should check this case
-         */
         if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
             throw new RuntimeException("User is not authenticated or invalid principal");
         }
