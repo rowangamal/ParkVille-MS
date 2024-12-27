@@ -5,9 +5,11 @@ import com.example.backend.DTOs.DriverAndLotDTO;
 import com.example.backend.DTOs.DriverNotificationDTO;
 import com.example.backend.model.ReservedSpot;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -87,28 +89,34 @@ public class ReservedSpotRepo {
             );
         });
     }
-    public List<DriverNotificationDTO> getPenaltyOverTime(){
-        String sql = "{call getPenaltyOverTime()}";
-        return jdbcTemplate.query(sql, (resultSet, i) -> {
-            return new DriverNotificationDTO(
+    public List<DriverNotificationDTO> getPenaltyOverTime() {
+        try {
+            String sql = "{call getPenaltyOverTime()}";
+            return jdbcTemplate.query(sql, (resultSet, i) -> new DriverNotificationDTO(
                     resultSet.getInt("Driver_id"),
                     resultSet.getInt("time_diff"),
                     resultSet.getInt("penalty")
-            );
-        });
+            ));
+        } catch (DataAccessException e) {
+            return new ArrayList<>(); // Return empty list instead of null
+        }
     }
     public List<DriverAndLotDTO> getUnArrivedDriverWithSpot(){
-        String sql = "{call getNoArrivedDrivers()}";
-        return jdbcTemplate.query(sql, (resultSet, i) -> {
-            return new DriverAndLotDTO(
-                    resultSet.getInt("Driver_id"),
-                    resultSet.getInt("time_diff"),
-                    resultSet.getInt("penalty"),
-                    resultSet.getInt("price"),
-                    resultSet.getInt("Parking_Lot_id"),
-                    resultSet.getInt("Parking_Spot_id")
-            );
-        });
+        try{
+            String sql = "{call getUnArrivedDriverWithSpot()}";
+            return jdbcTemplate.query(sql, (resultSet, i) -> {
+                return new DriverAndLotDTO(
+                        resultSet.getInt("Driver_id"),
+                        resultSet.getInt("time_diff"),
+                        resultSet.getInt("penalty"),
+                        resultSet.getInt("price"),
+                        resultSet.getInt("Parking_Lot_id"),
+                        resultSet.getInt("Parking_Spot_id")
+                );
+            });
+        } catch (DataAccessException e) {
+            return new ArrayList<>(); // Return empty list instead of null
+        }
     }
 
     public List<ReservedSpot> getDriverReservedSpots(int driverId){
@@ -130,4 +138,3 @@ public class ReservedSpotRepo {
     }
 
 }
-

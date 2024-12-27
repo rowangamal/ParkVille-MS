@@ -2,6 +2,7 @@ package com.example.backend.repository;
 
 import com.example.backend.DTOs.LotCreationDTO;
 import com.example.backend.DTOs.ParkingLotResponseDTO;
+import com.example.backend.model.ParkingLot;
 import com.example.backend.model.ParkingSpot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
