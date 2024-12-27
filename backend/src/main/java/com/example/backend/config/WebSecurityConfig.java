@@ -40,6 +40,8 @@ public class WebSecurityConfig {
                                 .requestMatchers("/lot/**").permitAll()
                                 .requestMatchers("/dashboard/**").permitAll()
                                 .requestMatchers("/reports/**").permitAll()
+                                .requestMatchers("/api/report/getReport").permitAll()
+                                .requestMatchers("/api/report/topUsers").permitAll()
                         .requestMatchers("/api/managers/**").hasAuthority("ROLE_MANAGER")
                         .requestMatchers("/api/admins/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("api/drivers/**").hasAuthority("ROLE_DRIVER")

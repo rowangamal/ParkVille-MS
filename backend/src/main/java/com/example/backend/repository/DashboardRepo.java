@@ -13,8 +13,21 @@ public class DashboardRepo {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public List<ParkingLot> getParkingLotRevenues() {
-        String sql = "SELECT id, longitude, latitude, revenue FROM Parking_Lot";
+//    public List<ParkingLot> getParkingLotRevenues() {
+//        String sql = "SELECT id, longitude, latitude, revenue FROM Parking_Lot";
+//        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+//            ParkingLot parkingLot = new ParkingLot();
+//            parkingLot.setId(rs.getInt("id"));
+//            parkingLot.setLongitude(rs.getString("longitude"));
+//            parkingLot.setLatitude(rs.getString("latitude"));
+//            parkingLot.setRevenue(rs.getDouble("revenue"));
+//            return parkingLot;
+//        });
+//    }
+
+    public List<ParkingLot> getTopParkingLotRevenues() {
+        String sql = "SELECT id, longitude, latitude, revenue FROM Parking_Lot " +
+                "ORDER BY revenue DESC LIMIT 10";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             ParkingLot parkingLot = new ParkingLot();
             parkingLot.setId(rs.getInt("id"));
@@ -24,6 +37,7 @@ public class DashboardRepo {
             return parkingLot;
         });
     }
+
 
     public List<Map<String, Object>> getTopUsers() {
         String sql = "SELECT Driver_id, COUNT(*) AS reservations FROM Reserved_Spot " +

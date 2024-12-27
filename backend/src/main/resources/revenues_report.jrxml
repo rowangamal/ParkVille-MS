@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+              http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+			  name="TopParkingLotRevenues" pageWidth="595" pageHeight="842" columnWidth="515"
+			  leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50">
+
+	<!-- Query definition (optional for static data) -->
+	<queryString>
+		<![CDATA[SELECT id, longitude, latitude, revenue FROM Parking_Lot ORDER BY revenue DESC LIMIT 10]]>
+	</queryString>
+
+	<!-- Define fields to be used in the report -->
+	<field name="id" class="java.lang.Integer"/>
+	<field name="longitude" class="java.lang.String"/>
+	<field name="latitude" class="java.lang.String"/>
+	<field name="revenue" class="java.lang.Double"/>
+
+	<!-- Title section (static content) -->
+	<title>
+		<band height="50">
+			<staticText>
+				<reportElement x="0" y="0" width="515" height="50"/>
+				<textElement>
+					<font size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Top Parking Lot Revenues]]></text>
+			</staticText>
+		</band>
+	</title>
+
+	<!-- Column header section -->
+	<columnHeader>
+		<band height="30">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="30"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="0" width="150" height="30"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Longitude]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="250" y="0" width="150" height="30"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Latitude]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="400" y="0" width="115" height="30"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Revenue]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+
+	<!-- Detail section to display the actual data -->
+	<detail>
+		<band height="20">
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20"/>
+				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="0" width="150" height="20"/>
+				<textFieldExpression><![CDATA[$F{longitude}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="250" y="0" width="150" height="20"/>
+				<textFieldExpression><![CDATA[$F{latitude}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="400" y="0" width="115" height="20"/>
+				<textFieldExpression><![CDATA[$F{revenue}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+
+	<!-- Report footer (optional) -->
+	<pageFooter>
+		<band height="30">
+			<staticText>
+				<reportElement x="0" y="0" width="515" height="30"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[Page {PAGE_NUMBER} of {TOTAL_PAGES}]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+
+</jasperReport>
