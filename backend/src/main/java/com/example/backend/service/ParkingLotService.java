@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import com.example.backend.DTOs.ParkingLotResponseDTO;
 import com.example.backend.model.ReservedSpot;
 import com.example.backend.repository.ParkingLotRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,5 +32,13 @@ public class ParkingLotService {
         }
         reservedSpot.setPrice(initialPrice);
         return reservedSpot;
+    }
+
+    public Boolean checkParkingLotExists(String latitude, String longitude) {
+        return parkingLotRepo.isParkingLotFound(latitude, longitude);
+    }
+
+    public ParkingLotResponseDTO getParkingLotInfo(String latitude, String longitude) {
+        return parkingLotRepo.getParkingLotInfo(latitude, longitude);
     }
 }

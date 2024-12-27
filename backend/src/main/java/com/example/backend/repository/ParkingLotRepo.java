@@ -1,40 +1,83 @@
 package com.example.backend.repository;
 
-
-import com.example.backend.model.ParkingLot;
+import com.example.backend.DTOs.LotCreationDTO;
+import com.example.backend.DTOs.ParkingLotResponseDTO;
+import com.example.backend.model.ParkingSpot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public class ParkingLotRepo {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-
-    public void save(ParkingLot parkingLot ){
+    public void save(LotCreationDTO parkingLot, int managerId){
         String sqlStatement = "insert into Parking_Lot " +
                 "(longitude, latitude , capacity, price, type , revenue , Parking_Lot_Manager_id ) " +
                 "values (?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sqlStatement,
                 parkingLot.getLongitude(),
                 parkingLot.getLatitude(),
-                parkingLot.getCapacity(),
-                parkingLot.getPrice(),
-                parkingLot.getType(),
-                parkingLot.getRevenue(),
-                parkingLot.getParkingLotManagerid());
-        for(int i = 0; i < parkingLot.getCapacity(); i++){
+                parkingLot.getNumberOfSlots(),
+                parkingLot.getPricePerHour(),
+                parkingLot.getParkingType(),
+                0.0,
+                managerId);
+
+        int parking_lot_id = getParkingLotCount();
+        for(int i = 0; i < parkingLot.getNumberOfSlots(); i++){
             String sqlStatement2 = "insert into Parking_Spot " +
-                    "(status, Parking_Lot_id) " +
-                    "values (?, ?)";
-            jdbcTemplate.update(sqlStatement2, "empty", parkingLot.getId());
+                    "(id, status, Parking_Lot_id) " +
+                    "values (?, ?, ?)";
+            jdbcTemplate.update(sqlStatement2, i+1, "empty", parking_lot_id);
         }
+    }
+
+    private int getParkingLotCount() {
+        String sql = "SELECT COUNT(*) FROM parkdb.Parking_Lot";
+        return jdbcTemplate.queryForObject(sql, Integer.class);
     }
     public void delete(int id){
         String sqlStatement = "delete from Parking_Lot where id = ?";
         jdbcTemplate.update(sqlStatement, id);
-
     }
 
+    public Boolean isParkingLotFound(String latitude, String longitude) {
+        String sqlStatement = "SELECT COUNT(*) FROM parkdb.Parking_Lot WHERE latitude = ? AND longitude = ?";
+        Integer count = jdbcTemplate.queryForObject(sqlStatement, new Object[]{latitude, longitude}, Integer.class);
+        return count > 0;
+    }
+
+    public ParkingLotResponseDTO getParkingLotInfo(String latitude, String longitude) {
+        String parkingLotQuery = "SELECT longitude, latitude, price AS pricePerHour, type AS parkingType " +
+                "FROM parkdb.Parking_Lot WHERE latitude = ? AND longitude = ?";
+
+        ParkingLotResponseDTO parkingLot = jdbcTemplate.queryForObject(parkingLotQuery, new Object[]{latitude, longitude},
+                (rs, rowNum) -> {
+                    ParkingLotResponseDTO dto = new ParkingLotResponseDTO();
+                    dto.setLongitude(rs.getString("longitude"));
+                    dto.setLatitude(rs.getString("latitude"));
+                    dto.setPricePerHour(rs.getDouble("pricePerHour"));
+                    dto.setParkingType(rs.getString("parkingType"));
+                    return dto;
+                });
+
+        String parkingSpotsQuery = "SELECT id, status FROM parkdb.Parking_Spot WHERE Parking_Lot_id = ( " +
+                "SELECT id FROM parkdb.Parking_Lot WHERE latitude = ? AND longitude = ? )";
+
+        List<ParkingSpot> parkingSpots = jdbcTemplate.query(parkingSpotsQuery, new Object[]{latitude, longitude},
+                (rs, rowNum) -> {
+                    ParkingSpot spot = new ParkingSpot();
+                    spot.setId(rs.getInt("id"));
+                    spot.setStatus(rs.getString("status"));
+                    return spot;
+                });
+
+        parkingLot.setParkingSpots(parkingSpots);
+
+        return parkingLot;
+    }
 }

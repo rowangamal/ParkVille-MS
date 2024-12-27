@@ -1,8 +1,11 @@
 package com.example.backend.service;
 
+import com.example.backend.DTOs.LotCreationDTO;
 import com.example.backend.DTOs.SuccessLoginDTO;
 import com.example.backend.model.LotManager;
+import com.example.backend.model.ParkingLot;
 import com.example.backend.repository.LotManagerRepo;
+import com.example.backend.repository.ParkingLotRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,10 @@ import java.util.Optional;
 public class LotManagerService {
     @Autowired
     private LotManagerRepo lotManagerRepo;
+
+    @Autowired
+    private ParkingLotRepo parkingLotRepo;
+
     @Autowired
     private JWTService jwtService;
 
@@ -46,5 +53,9 @@ public class LotManagerService {
         }
         String jwt = jwtService.generateToken(lotManager.getId(), lotManager.getRole());
         return new SuccessLoginDTO(lotManager.getId(), lotManager.getUsername(), lotManager.getRole(), jwt);
+    }
+
+    public void createParkingLot(LotCreationDTO lotCreationRequest, int managerId) {
+        parkingLotRepo.save(lotCreationRequest, managerId);
     }
 }

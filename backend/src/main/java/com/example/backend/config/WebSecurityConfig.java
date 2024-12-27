@@ -1,7 +1,6 @@
 package com.example.backend.config;
 
 import com.example.backend.enums.Role;
-//import com.example.backend.services.JWTFilter;
 import com.example.backend.service.JWTFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -29,20 +28,22 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers("/**").permitAll()
+                        .requestMatchers("/**").permitAll()
 
-                        .requestMatchers("/api/drivers/signup").permitAll()
-                        .requestMatchers("/api/drivers/login").permitAll()
-                        .requestMatchers("/api/admins/signup").permitAll()
-                        .requestMatchers("/api/admins/login").permitAll()
-                        .requestMatchers("/api/managers/signup").permitAll()
-                        .requestMatchers("/api/managers/login").permitAll()
-                                .requestMatchers("/lot/**").permitAll()
-                                .requestMatchers("/dashboard/**").permitAll()
-                                .requestMatchers("/reports/**").permitAll()
-                        .requestMatchers("/api/managers/**").hasAuthority("ROLE_MANAGER")
-                        .requestMatchers("/api/admins/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("api/drivers/**").hasAuthority("ROLE_DRIVER")
+//                        .requestMatchers("/api/drivers/signup").permitAll()
+//                        .requestMatchers("/api/drivers/login").permitAll()
+//                        .requestMatchers("/api/admins/signup").permitAll()
+//                        .requestMatchers("/api/admins/login").permitAll()
+//                        .requestMatchers("/api/managers/signup").permitAll()
+//                        .requestMatchers("/api/managers/login").permitAll()
+//                                .requestMatchers("/api/managers/create-parking-lot").permitAll()
+//                                .requestMatchers("/api/managers/is-parking-lot-created").permitAll()
+//                                .requestMatchers("/lot/**").permitAll()
+//                                .requestMatchers("/dashboard/**").permitAll()
+//                                .requestMatchers("/reports/**").permitAll()
+//                        .requestMatchers("/api/managers/**").hasAuthority("ROLE_MANAGER")
+//                        .requestMatchers("/api/admins/**").hasAuthority("ROLE_ADMIN")
+//                        .requestMatchers("api/drivers/**").hasAuthority("ROLE_DRIVER")
 //                        .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement -> sessionManagement
