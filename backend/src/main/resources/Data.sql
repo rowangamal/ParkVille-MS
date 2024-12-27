@@ -16,8 +16,8 @@ insert into reserved_spot value ( "2024-12-27 12:55:00","2024-12-27 10:00:00" , 
 insert into reserved_spot value ( "2024-12-27 15:55:00","2024-12-27 14:00:00" , null , null , 1 , 1 , 1 , 175 , 0 ) ;
 
 
-delete from reserved_spot
-where Driver_id = 1 ;
+--delete from reserved_spot
+--where Driver_id = 1 ;
 
 
 select * from reserved_spot;
