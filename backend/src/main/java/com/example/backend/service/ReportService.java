@@ -24,9 +24,21 @@ public class ReportService {
     private JdbcTemplate jdbcTemplate;
 
     // Fetch top parking lot revenues
+    public List<ParkingLot> getTopParkingLotRevenues() {
+        String sql = "SELECT id, longitude, latitude, revenue FROM Parking_Lot " +
+                "ORDER BY revenue DESC LIMIT 10";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            ParkingLot parkingLot = new ParkingLot();
+            parkingLot.setId(rs.getInt("id"));
+            parkingLot.setLongitude(rs.getString("longitude"));
+            parkingLot.setLatitude(rs.getString("latitude"));
+            parkingLot.setRevenue(rs.getDouble("revenue"));
+            return parkingLot;
+        });
+    }
+//
 //    public List<ParkingLot> getTopParkingLotRevenues() {
-//        String sql = "SELECT id, longitude, latitude, revenue FROM Parking_Lot " +
-//                "ORDER BY revenue DESC LIMIT 10";
+//        String sql = "CALL GetTopParkingLotRevenues()";
 //        return jdbcTemplate.query(sql, (rs, rowNum) -> {
 //            ParkingLot parkingLot = new ParkingLot();
 //            parkingLot.setId(rs.getInt("id"));
@@ -37,35 +49,13 @@ public class ReportService {
 //        });
 //    }
 
-    public List<ParkingLot> getTopParkingLotRevenues() {
-        String sql = "CALL GetTopParkingLotRevenues()";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            ParkingLot parkingLot = new ParkingLot();
-            parkingLot.setId(rs.getInt("id"));
-            parkingLot.setLongitude(rs.getString("longitude"));
-            parkingLot.setLatitude(rs.getString("latitude"));
-            parkingLot.setRevenue(rs.getDouble("revenue"));
-            return parkingLot;
-        });
-    }
-
-//    public List<ReportUserDTO> getTopUsers() {
-//        String sql = "SELECT Driver_id AS driverId, COUNT(*) AS reservations " +
-//                "FROM Reserved_Spot " +
-//                "GROUP BY Driver_id " +
-//                "ORDER BY reservations DESC " +
-//                "LIMIT 10";
-//
-//        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-//            ReportUserDTO user = new ReportUserDTO();
-//            user.setDriverId(rs.getInt("driverId"));
-//            user.setReservations(rs.getInt("reservations"));
-//            return user;
-//        });
-//    }
-
     public List<ReportUserDTO> getTopUsers() {
-        String sql = "CALL GetTopUsers()";
+        String sql = "SELECT Driver_id AS driverId, COUNT(*) AS reservations " +
+                "FROM Reserved_Spot " +
+                "GROUP BY Driver_id " +
+                "ORDER BY reservations DESC " +
+                "LIMIT 10";
+
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             ReportUserDTO user = new ReportUserDTO();
             user.setDriverId(rs.getInt("driverId"));
@@ -73,6 +63,16 @@ public class ReportService {
             return user;
         });
     }
+
+//    public List<ReportUserDTO> getTopUsers() {
+//        String sql = "CALL GetTopUsers()";
+//        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+//            ReportUserDTO user = new ReportUserDTO();
+//            user.setDriverId(rs.getInt("driverId"));
+//            user.setReservations(rs.getInt("reservations"));
+//            return user;
+//        });
+//    }
 
 
 
@@ -127,14 +127,15 @@ public class ReportService {
 
     public List<ParkingLotManagerReportDTO> getParkingLotManagerReport(int managerId) {
         String sql = "SELECT pl.id AS parkingLotId, " +
-                "COUNT(CASE WHEN ps.status = 'occupied' THEN 1 END) / COUNT(ps.id) * 100 " +
-                "AS occupied_rate, pl.revenue AS total_revenue, SUM(rs.penalty) " +
-                "AS total_violations FROM Parking_Lot pl LEFT JOIN Parking_Spot ps " +
-                "ON pl.id = ps.Parking_Lot_id LEFT JOIN Reserved_Spot rs " +
-                "ON ps.id = rs.Parking_Spot_id WHERE pl.Parking_Lot_Manager_id = ? " +
-                "GROUP BY pl.id, pl.revenue";
+                "COUNT(CASE WHEN ps.status = 'occupied' THEN 1 END) / COUNT(ps.id) * 100 AS occupied_rate, " +
+                "SUM(rs.price) + SUM(rs.penalty) AS total_revenue, " +
+                "SUM(rs.penalty) AS total_violations " +
+                "FROM Parking_Lot pl " +
+                "LEFT JOIN Parking_Spot ps ON pl.id = ps.Parking_Lot_id " +
+                "LEFT JOIN Reserved_Spot rs ON ps.id = rs.Parking_Spot_id " +
+                "WHERE pl.Parking_Lot_Manager_id = ? " +
+                "GROUP BY pl.id";
 
-        // Return an empty list if no results are found.
         return jdbcTemplate.query(sql, new Object[]{managerId}, new RowMapper<ParkingLotManagerReportDTO>() {
             @Override
             public ParkingLotManagerReportDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
