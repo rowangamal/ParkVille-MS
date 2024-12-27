@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class ReservedSpotRepo {
     @Autowired
@@ -63,6 +65,24 @@ public class ReservedSpotRepo {
     public void updateLeaveTime(ReservedSpot reservedSpot){
         String sqlStatement = "update Reserved_Spot set leave_time = ? where Driver_id = ? and Parking_Spot_id = ? and Parking_Spot_Parking_Lot_id = ?";
         jdbcTemplate.update(sqlStatement, reservedSpot.getLeaveTime(), reservedSpot.getDriverId(), reservedSpot.getParkingSpotId(), reservedSpot.getParkingSpotParkingLotId());
+    }
+
+    public List<ReservedSpot> getDriverReservedSpots(int driverId){
+        String sqlStatement = "select * from Reserved_Spot where Driver_id = ? and leave_time is null";
+
+        return jdbcTemplate.query(sqlStatement, new Object[]{driverId}, (resultSet, i) -> {
+            return new ReservedSpot(
+                    resultSet.getTimestamp("end_time"),
+                    resultSet.getTimestamp("start_time"),
+                    resultSet.getTimestamp("arrival_time"),
+                    resultSet.getTimestamp("leave_time"),
+                    resultSet.getInt("Driver_id"),
+                    resultSet.getInt("Parking_Spot_Parking_Lot_id"),
+                    resultSet.getInt("Parking_Spot_id"),
+                    resultSet.getDouble("price"),
+                    resultSet.getDouble("penalty")
+            );
+        });
     }
 
 }
