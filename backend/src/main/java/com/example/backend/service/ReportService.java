@@ -127,7 +127,7 @@ public class ReportService {
 
     public List<ParkingLotManagerReportDTO> getParkingLotManagerReport(int managerId) {
         String sql = "SELECT pl.id AS parkingLotId, " +
-                "COUNT(CASE WHEN ps.status = 'Occupied' THEN 1 END) / COUNT(ps.id) * 100 " +
+                "COUNT(CASE WHEN ps.status = 'occupied' THEN 1 END) / COUNT(ps.id) * 100 " +
                 "AS occupied_rate, pl.revenue AS total_revenue, SUM(rs.penalty) " +
                 "AS total_violations FROM Parking_Lot pl LEFT JOIN Parking_Spot ps " +
                 "ON pl.id = ps.Parking_Lot_id LEFT JOIN Reserved_Spot rs " +
