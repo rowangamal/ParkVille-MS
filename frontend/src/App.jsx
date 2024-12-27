@@ -40,21 +40,24 @@ import LandingPage from '../src/components/LandingPage';
 import Login from '../src/components/Login';
 import Signup from '../src/components/Signup';
 import AdminDashboard from './components/AdminDashboard';
+import ManagerDashboard from './components/ManagerDashboard';
 
 const App = () => {
   return (
-    // <Router>
-    //   <Routes>
-    //     <Route path="/" element={<LandingPage />} />
-    //     <Route path="/signup" element={<Signup />} />
-    //     <Route path="/login" element={<Login />} />
-    //   </Routes>
-    // </Router>
-    <div className="App">
-      <header className="App-header">
-        <AdminDashboard />
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/manager" element={<ManagerDashboard />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+      </Routes>
+    </Router>
+    // <div className="App">
+    //   <header className="App-header">
+    //     <ManagerDashboard />
+    //   </header>
+    // </div>
   );
 };
 

@@ -52,6 +52,7 @@ const Login = () => {
         });
 
         localStorage.setItem('jwtToken', successData.jwtToken);
+        console.log(successData.jwtToken);
       } else {
         const errorText = await response.text();
         setMessage({ text: errorText || 'Login failed', type: 'error' });

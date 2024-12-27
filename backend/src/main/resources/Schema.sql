@@ -126,3 +126,24 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+DELIMITER $$
+CREATE PROCEDURE GetTopParkingLotRevenues()
+BEGIN
+    SELECT id, longitude, latitude, revenue
+    FROM Parking_Lot
+    ORDER BY revenue DESC
+    LIMIT 10;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE GetTopUsers()
+BEGIN
+    SELECT Driver_id AS driverId, COUNT(*) AS reservations
+    FROM Reserved_Spot
+    GROUP BY Driver_id
+    ORDER BY reservations DESC
+    LIMIT 10;
+END $$
+DELIMITER ;

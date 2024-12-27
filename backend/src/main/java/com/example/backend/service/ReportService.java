@@ -8,8 +8,11 @@ import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +24,21 @@ public class ReportService {
     private JdbcTemplate jdbcTemplate;
 
     // Fetch top parking lot revenues
+//    public List<ParkingLot> getTopParkingLotRevenues() {
+//        String sql = "SELECT id, longitude, latitude, revenue FROM Parking_Lot " +
+//                "ORDER BY revenue DESC LIMIT 10";
+//        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+//            ParkingLot parkingLot = new ParkingLot();
+//            parkingLot.setId(rs.getInt("id"));
+//            parkingLot.setLongitude(rs.getString("longitude"));
+//            parkingLot.setLatitude(rs.getString("latitude"));
+//            parkingLot.setRevenue(rs.getDouble("revenue"));
+//            return parkingLot;
+//        });
+//    }
+
     public List<ParkingLot> getTopParkingLotRevenues() {
-        String sql = "SELECT id, longitude, latitude, revenue FROM Parking_Lot " +
-                "ORDER BY revenue DESC LIMIT 10";
+        String sql = "CALL GetTopParkingLotRevenues()";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             ParkingLot parkingLot = new ParkingLot();
             parkingLot.setId(rs.getInt("id"));
@@ -34,13 +49,23 @@ public class ReportService {
         });
     }
 
-    public List<ReportUserDTO> getTopUsers() {
-        String sql = "SELECT Driver_id AS driverId, COUNT(*) AS reservations " +
-                "FROM Reserved_Spot " +
-                "GROUP BY Driver_id " +
-                "ORDER BY reservations DESC " +
-                "LIMIT 10";
+//    public List<ReportUserDTO> getTopUsers() {
+//        String sql = "SELECT Driver_id AS driverId, COUNT(*) AS reservations " +
+//                "FROM Reserved_Spot " +
+//                "GROUP BY Driver_id " +
+//                "ORDER BY reservations DESC " +
+//                "LIMIT 10";
+//
+//        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+//            ReportUserDTO user = new ReportUserDTO();
+//            user.setDriverId(rs.getInt("driverId"));
+//            user.setReservations(rs.getInt("reservations"));
+//            return user;
+//        });
+//    }
 
+    public List<ReportUserDTO> getTopUsers() {
+        String sql = "CALL GetTopUsers()";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             ReportUserDTO user = new ReportUserDTO();
             user.setDriverId(rs.getInt("driverId"));
@@ -48,6 +73,7 @@ public class ReportService {
             return user;
         });
     }
+
 
 
     // Generate PDF report for top parking lot revenues
@@ -73,52 +99,59 @@ public class ReportService {
     }
 
 
-    public List<ParkingLotManagerReportDTO> getParkingLotManagerReport() {
-        String sql = "SELECT pl.id AS parkingLotId, " +
-                "pl.longitude, " +
-                "pl.latitude, " +
-                "pl.capacity, " +
-                "COUNT(ps.id) AS totalSpots, " +
-                "SUM(CASE WHEN ps.status = 'Occupied' THEN 1 ELSE 0 END) AS occupiedSpots, " +
-                "(COUNT(ps.id) - SUM(CASE WHEN ps.status = 'Occupied' THEN 1 ELSE 0 END)) AS availableSpots, " +
-                "pl.revenue AS totalRevenue, " +
-                "SUM(rs.penalty) AS totalPenalties, " +
-                "(SUM(CASE WHEN ps.status = 'Occupied' THEN 1 ELSE 0 END) / COUNT(ps.id)) * 100 AS occupancyRate, " +
-                "SUM(CASE WHEN rs.violation_type = 'Overstay' THEN rs.penalty ELSE 0 END) AS overstayPenalties " + // Added overstay penalty
-                "FROM Parking_Lot pl " +
-                "JOIN Parking_Spot ps ON pl.id = ps.Parking_Lot_id " +
-                "LEFT JOIN Reserved_Spot rs ON ps.Parking_Lot_id = rs.Parking_Spot_Parking_Lot_id AND ps.id = rs.Parking_Spot_id " +
-                "GROUP BY pl.id, pl.longitude, pl.latitude, pl.capacity, pl.revenue " +
-                "ORDER BY pl.revenue DESC " +
-                "LIMIT 10";
+//    public List<ParkingLotManagerReportDTO> getParkingLotManagerReport(int managerId) {
+//        String sql = "SELECT " +
+//                "pl.id AS parkingLotId, " +
+//                "(COUNT(CASE WHEN ps.status = 'Occupied' THEN 1 END) / COUNT(*)) * 100 AS occupancy_rate, " +
+//                "SUM(rs.price + COALESCE(rs.penalty, 0)) AS total_revenue, " +
+//                "SUM(COALESCE(rs.penalty, 0)) AS total_violations " +
+//                "FROM parkdb.Parking_Spot ps " +
+//                "JOIN parkdb.Parking_Lot pl ON ps.Parking_Lot_id = pl.id " +
+//                "LEFT JOIN parkdb.Reserved_Spot rs ON ps.Parking_Lot_id = rs.Parking_Spot_Parking_Lot_id " +
+//                "AND ps.id = rs.Parking_Spot_id " +
+//                "WHERE pl.Parking_Lot_Manager_id = ? " +
+//                "GROUP BY pl.id";
+//
+//        return jdbcTemplate.query(sql, new Object[]{managerId}, new RowMapper<ParkingLotManagerReportDTO>() {
+//            @Override
+//            public ParkingLotManagerReportDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+//                ParkingLotManagerReportDTO report = new ParkingLotManagerReportDTO();
+//                report.setParkingLotId(rs.getInt("parkingLotId"));
+//                report.setOccupancyRate(rs.getDouble("occupancy_rate"));
+//                report.setTotalRevenue(rs.getDouble("total_revenue"));
+//                report.setTotalViolations(rs.getDouble("total_violations"));
+//                return report;
+//            }
+//        });
+//    }
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            ParkingLotManagerReportDTO report = new ParkingLotManagerReportDTO();
-            report.setParkingLotId(rs.getInt("parkingLotId"));
-            report.setLongitude(rs.getString("longitude"));
-            report.setLatitude(rs.getString("latitude"));
-            report.setCapacity(rs.getInt("capacity"));
-            report.setTotalSpots(rs.getInt("totalSpots"));
-            report.setOccupiedSpots(rs.getInt("occupiedSpots"));
-            report.setAvailableSpots(rs.getInt("availableSpots"));
-            report.setTotalRevenue(rs.getDouble("totalRevenue"));
-            report.setTotalPenalties(rs.getDouble("totalPenalties"));
-            report.setOccupancyRate(rs.getDouble("occupancyRate"));
-            report.setOverstayPenalties(rs.getDouble("overstayPenalties")); // Include overstay penalties
-            return report;
+    public List<ParkingLotManagerReportDTO> getParkingLotManagerReport(int managerId) {
+        String sql = "CALL GetParkingLotManagerReport(?)";
+        return jdbcTemplate.query(sql, new Object[]{managerId}, new RowMapper<ParkingLotManagerReportDTO>() {
+            @Override
+            public ParkingLotManagerReportDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+                ParkingLotManagerReportDTO report = new ParkingLotManagerReportDTO();
+                report.setParkingLotId(rs.getInt("parkingLotId"));
+                report.setOccupancyRate(rs.getDouble("occupied_rate"));
+                report.setReservedRate(rs.getDouble("reserved_rate"));
+                report.setFreeRate(rs.getDouble("empty_rate"));
+                report.setTotalRevenue(rs.getDouble("total_revenue"));
+                report.setTotalViolations(rs.getDouble("total_violations"));
+                return report;
+            }
         });
     }
 
 
 
-    public byte[] generateParkingLotManagerReport() throws Exception {
-        List<ParkingLotManagerReportDTO> reportData = getParkingLotManagerReport();
+    public byte[] generateParkingLotManagerReport(int managerId) throws Exception {
+        List<ParkingLotManagerReportDTO> reportData = getParkingLotManagerReport(managerId);
         JasperReport jasperReport = JasperCompileManager.compileReport("src/main/resources/manager_report.jrxml");
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportData);
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("reportTitle", "Parking Lot Manager Real-Time Report");
+        parameters.put("managerId", managerId);
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
-
 }

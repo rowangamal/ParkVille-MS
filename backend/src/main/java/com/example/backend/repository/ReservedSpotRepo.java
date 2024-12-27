@@ -50,7 +50,6 @@ public class ReservedSpotRepo {
                     resultSet.getInt("Parking_Spot_id"),
                     resultSet.getDouble("price"),
                     resultSet.getDouble("penalty")
-
             );
         });
     }
