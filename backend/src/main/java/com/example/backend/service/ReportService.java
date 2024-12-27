@@ -126,15 +126,21 @@ public class ReportService {
 //    }
 
     public List<ParkingLotManagerReportDTO> getParkingLotManagerReport(int managerId) {
-        String sql = "CALL GetParkingLotManagerReport(?)";
+        String sql = "SELECT pl.id AS parkingLotId, " +
+                "COUNT(CASE WHEN ps.status = 'Occupied' THEN 1 END) / COUNT(ps.id) * 100 " +
+                "AS occupied_rate, pl.revenue AS total_revenue, SUM(rs.penalty) " +
+                "AS total_violations FROM Parking_Lot pl LEFT JOIN Parking_Spot ps " +
+                "ON pl.id = ps.Parking_Lot_id LEFT JOIN Reserved_Spot rs " +
+                "ON ps.id = rs.Parking_Spot_id WHERE pl.Parking_Lot_Manager_id = ? " +
+                "GROUP BY pl.id, pl.revenue";
+
+        // Return an empty list if no results are found.
         return jdbcTemplate.query(sql, new Object[]{managerId}, new RowMapper<ParkingLotManagerReportDTO>() {
             @Override
             public ParkingLotManagerReportDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
                 ParkingLotManagerReportDTO report = new ParkingLotManagerReportDTO();
                 report.setParkingLotId(rs.getInt("parkingLotId"));
                 report.setOccupancyRate(rs.getDouble("occupied_rate"));
-                report.setReservedRate(rs.getDouble("reserved_rate"));
-                report.setFreeRate(rs.getDouble("empty_rate"));
                 report.setTotalRevenue(rs.getDouble("total_revenue"));
                 report.setTotalViolations(rs.getDouble("total_violations"));
                 return report;

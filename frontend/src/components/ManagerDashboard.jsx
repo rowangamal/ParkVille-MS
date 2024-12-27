@@ -5,8 +5,7 @@ import axios from 'axios';
 const ManagerDashboard = () => {
   const [pdfUrl, setPdfUrl] = useState(null);
 
-  const token = localStorage.getItem('jwtToken'); // Retrieve the token from localStorage
-
+  const token = localStorage.getItem('jwtToken'); 
   const fetchPDF = async () => {
     if (!token) {
       console.error('No token found');
