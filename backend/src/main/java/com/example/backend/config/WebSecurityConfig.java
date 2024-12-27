@@ -39,6 +39,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/dashboard/**").permitAll()
                                 .requestMatchers("/reports/**").permitAll()
                                 .requestMatchers("/api/report/**").permitAll()
+                                .requestMatchers("/api/is-parking-lot-created").permitAll()
                         .requestMatchers("/api/managers/**").hasAuthority("ROLE_MANAGER")
                         .requestMatchers("/api/admins/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("api/drivers/**").hasAuthority("ROLE_DRIVER")

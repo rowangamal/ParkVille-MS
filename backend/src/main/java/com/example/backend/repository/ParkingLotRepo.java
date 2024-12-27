@@ -16,9 +16,11 @@ public class ParkingLotRepo {
     private JdbcTemplate jdbcTemplate;
 
     public void save(LotCreationDTO parkingLot, int managerId){
+        System.out.println(managerId);
         String sqlStatement = "insert into Parking_Lot " +
                 "(longitude, latitude , capacity, price, type , revenue , Parking_Lot_Manager_id ) " +
                 "values (?, ?, ?, ?, ?, ?, ?)";
+
         jdbcTemplate.update(sqlStatement,
                 parkingLot.getLongitude(),
                 parkingLot.getLatitude(),
@@ -28,7 +30,10 @@ public class ParkingLotRepo {
                 0.0,
                 managerId);
 
-        int parking_lot_id = getParkingLotCount();
+        int parking_lot_id = getLastParkingLotId();
+        System.out.println("yarab");
+        System.out.println(parking_lot_id);
+
         for(int i = 0; i < parkingLot.getNumberOfSlots(); i++){
             String sqlStatement2 = "insert into Parking_Spot " +
                     "(id, status, Parking_Lot_id) " +
@@ -37,10 +42,11 @@ public class ParkingLotRepo {
         }
     }
 
-    private int getParkingLotCount() {
-        String sql = "SELECT COUNT(*) FROM parkdb.Parking_Lot";
+    private int getLastParkingLotId() {
+        String sql = "SELECT id FROM parkdb.Parking_Lot ORDER BY id DESC LIMIT 1";
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
+
     public void delete(int id){
         String sqlStatement = "delete from Parking_Lot where id = ?";
         jdbcTemplate.update(sqlStatement, id);
