@@ -23,7 +23,7 @@ public class ParkingSpotService {
 
     public void reserveSpot(int id, int parkingLotId){
         String getSpotStatus = getSpotStatus(id, parkingLotId);
-        if (getSpotStatus.equals("reserved")){
+        if (!getSpotStatus.equals("empty")){
             throw new SpotReservedException("Spot is already reserved.");
         }
         parkingSpotRepo.updateStatus(id, parkingLotId, "reserved");

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Service
 public class ReservedSpotService {
@@ -33,6 +34,11 @@ public class ReservedSpotService {
         reservedSpot.setLeaveTime(new Timestamp(System.currentTimeMillis()));
         reservedSpotRepo.updateLeaveTime(reservedSpot);
     }
+
+    public List<ReservedSpot> getDriverReservedSpots(int driverId){
+        return reservedSpotRepo.getDriverReservedSpots(driverId);
+    }
+
 
 
 }

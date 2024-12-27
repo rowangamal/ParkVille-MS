@@ -112,6 +112,23 @@ public class ReservedSpotRepo {
         });
     }
 
+    public List<ReservedSpot> getDriverReservedSpots(int driverId){
+        String sqlStatement = "select * from Reserved_Spot where Driver_id = ? and leave_time is null";
+
+        return jdbcTemplate.query(sqlStatement, new Object[]{driverId}, (resultSet, i) -> {
+            return new ReservedSpot(
+                    resultSet.getTimestamp("end_time"),
+                    resultSet.getTimestamp("start_time"),
+                    resultSet.getTimestamp("arrival_time"),
+                    resultSet.getTimestamp("leave_time"),
+                    resultSet.getInt("Driver_id"),
+                    resultSet.getInt("Parking_Spot_Parking_Lot_id"),
+                    resultSet.getInt("Parking_Spot_id"),
+                    resultSet.getDouble("price"),
+                    resultSet.getDouble("penalty")
+            );
+        });
+    }
 
 }
 

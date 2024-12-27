@@ -54,4 +54,13 @@ public class ParkingSpotController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<Object> getCurrentReservedSpots() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(driverService.getReservedSpots());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
