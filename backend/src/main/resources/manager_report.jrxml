@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+              http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="ParkingLotManagerReport" pageWidth="595" pageHeight="842" columnWidth="515"
+              leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50">
+
+    <!-- Fields used in the report -->
+    <field name="parkingLotId" class="java.lang.Integer"/>
+    <field name="longitude" class="java.lang.String"/>
+    <field name="latitude" class="java.lang.String"/>
+    <field name="capacity" class="java.lang.Integer"/>
+    <field name="totalSpots" class="java.lang.Integer"/>
+    <field name="occupiedSpots" class="java.lang.Integer"/>
+    <field name="availableSpots" class="java.lang.Integer"/>
+    <field name="totalRevenue" class="java.lang.Double"/>
+    <field name="totalPenalties" class="java.lang.Double"/>
+    <field name="occupancyRate" class="java.lang.Double"/>
+    <field name="overstayPenalties" class="java.lang.Double"/>
+
+    <!-- Title section -->
+    <title>
+        <band height="50">
+            <staticText>
+                <reportElement x="0" y="0" width="515" height="50"/>
+                <textElement>
+                    <font size="18" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Parking Lot Manager Report]]></text>
+            </staticText>
+        </band>
+    </title>
+
+    <!-- Column header section -->
+    <columnHeader>
+        <band height="30">
+            <staticText>
+                <reportElement x="0" y="0" width="100" height="30"/>
+                <textElement>
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Parking Lot ID]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="100" y="0" width="100" height="30"/>
+                <textElement>
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Longitude]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="100" y="0" width="100" height="30"/>
+                <textElement>
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Latitude]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="300" y="0" width="100" height="30"/>
+                <textElement>
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Capacity]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="400" y="0" width="100" height="30"/>
+                <textElement>
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Occupancy Rate (%)]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="500" y="0" width="100" height="30"/>
+                <textElement>
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Revenue]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="600" y="0" width="100" height="30"/>
+                <textElement>
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Overstay Penalties]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <!-- Detail section -->
+    <detail>
+        <band height="20">
+            <textField>
+                <reportElement x="0" y="0" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$F{parkingLotId}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="100" y="0" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$F{longitude}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="200" y="0" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$F{latitude}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="300" y="0" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$F{capacity}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="400" y="0" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$F{occupancyRate}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="500" y="0" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$F{totalRevenue}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="600" y="0" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$F{overstayPenalties}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <!-- Page footer -->
+    <pageFooter>
+        <band height="30">
+            <staticText>
+                <reportElement x="0" y="0" width="515" height="30"/>
+                <textElement>
+                    <font size="10"/>
+                </textElement>
+                <text><![CDATA[Page {PAGE_NUMBER} of {TOTAL_PAGES}]]></text>
+            </staticText>
+        </band>
+    </pageFooter>
+
+</jasperReport>

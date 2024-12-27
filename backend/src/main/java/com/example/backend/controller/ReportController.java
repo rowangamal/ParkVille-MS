@@ -20,19 +20,11 @@ public class ReportController {
     public ResponseEntity<byte[]> generateReportLotRevenues() {
         try {
             byte[] pdfReport = reportService.generateReportParkingLotRevenues();
-
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=report.pdf");
-
-            return ResponseEntity
-                    .ok()
-                    .headers(headers)
-                    .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
-                    .body(pdfReport);
+            return ResponseEntity.ok().headers(headers).contentType(org.springframework.http.MediaType.APPLICATION_PDF).body(pdfReport);
         } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
@@ -40,17 +32,21 @@ public class ReportController {
     public ResponseEntity<byte[]> generateReportTopUsers() {
         try {
             byte[] pdfReport = reportService.generateReportTopUser();
-
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=top_users_report.pdf");
-
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
-                    .body(pdfReport);
+            return ResponseEntity.ok().headers(headers).contentType(org.springframework.http.MediaType.APPLICATION_PDF).body(pdfReport);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
+
+    @GetMapping("/parking-lot-manager")
+    public ResponseEntity<byte[]> generateParkingLotManagerReport() throws Exception {
+        byte[] reportContent = reportService.generateParkingLotManagerReport();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/pdf");
+        headers.set("Content-Disposition", "attachment; filename=\"parking_lot_manager_report.pdf\"");
+        return new ResponseEntity<>(reportContent, headers, HttpStatus.OK);
+    }
 }

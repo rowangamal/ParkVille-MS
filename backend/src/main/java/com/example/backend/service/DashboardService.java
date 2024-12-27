@@ -13,25 +13,25 @@ public class DashboardService {
 
     @Autowired
     private DashboardRepo dashboardRepo;
-
-
-    public List<ParkingLot> getParkingLotRevenues() {
-        return dashboardRepo.getTopParkingLotRevenues();
-    }
-
-    public List<Map<String, Object>> getTopUsers() {
-        return dashboardRepo.getTopUsers();
-    }
-
-    public double getOccupancyRate(int parkingLotId) {
-        return dashboardRepo.getOccupancyRate(parkingLotId);
-    }
-
-    public double getTotalRevenue(int parkingLotId) {
-        return dashboardRepo.getTotalRevenue(parkingLotId);
-    }
-
-    public double getTotalPenalties(int parkingLotId) {
-        return dashboardRepo.getTotalPenalties(parkingLotId);
-    }
+//
+//
+//    public List<ParkingLot> getParkingLotRevenues() {
+//        return dashboardRepo.getTopParkingLotRevenues();
+//    }
+//
+//    public List<Map<String, Object>> getTopUsers() {
+//        return dashboardRepo.getTopUsers();
+//    }
+//
+//    public double getOccupancyRate(int parkingLotId) {
+//        return dashboardRepo.getOccupancyRate(parkingLotId);
+//    }
+//
+//    public double getTotalRevenue(int parkingLotId) {
+//        return dashboardRepo.getTotalRevenue(parkingLotId);
+//    }
+//
+//    public double getTotalPenalties(int parkingLotId) {
+//        return dashboardRepo.getTotalPenalties(parkingLotId);
+//    }
 }

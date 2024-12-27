@@ -39,7 +39,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from '../src/components/LandingPage';
 import Login from '../src/components/Login';
 import Signup from '../src/components/Signup';
-import ParkingLotReport from './components/ParkingLotReport';
+import AdminDashboard from './components/AdminDashboard';
 
 const App = () => {
   return (
@@ -52,8 +52,7 @@ const App = () => {
     // </Router>
     <div className="App">
       <header className="App-header">
-        <h1>Parking Lot Dashboard</h1>
-        <ParkingLotReport />
+        <AdminDashboard />
       </header>
     </div>
   );
