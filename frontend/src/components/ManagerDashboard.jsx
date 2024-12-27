@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import Iframe from 'react-iframe';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 const ManagerDashboard = () => {
   const [pdfUrl, setPdfUrl] = useState(null);
-
+  const navigate = useNavigate();
   const token = localStorage.getItem('jwtToken'); 
+
+  const handleOnMapClick = () => {
+    navigate("/map")
+  }
+
   const fetchPDF = async () => {
     if (!token) {
       console.error('No token found');
@@ -41,6 +47,13 @@ const ManagerDashboard = () => {
           style={{ ...styles.button, backgroundColor: '#007bff' }}
         >
           Load Parking Lot Manager Report
+        </button>
+
+        <button
+          onClick={handleOnMapClick}
+          style={{ ...styles.button, backgroundColor: '#007bff' }}
+        >
+          Manage lots on map
         </button>
       </div>
 

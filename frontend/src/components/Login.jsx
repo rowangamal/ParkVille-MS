@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Car, Lock, User } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [formData, setFormData] = useState({ username: '', password: '', role: '' });
   const [message, setMessage] = useState(null);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,7 +54,15 @@ const Login = () => {
         });
 
         localStorage.setItem('jwtToken', successData.jwtToken);
-        console.log(successData.jwtToken);
+        localStorage.setItem('userId', successData.id);
+        localStorage.setItem('userRole', successData.role);
+        if(successData.role === "ROLE_MANAGER"){
+          navigate("/manager")
+        } else if(successData.role === "ROLE_ADMIN"){
+          navigate("/admin")
+        } else {
+          navigate("/")
+        }
       } else {
         const errorText = await response.text();
         setMessage({ text: errorText || 'Login failed', type: 'error' });
