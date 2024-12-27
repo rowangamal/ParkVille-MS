@@ -37,4 +37,20 @@ public class ParkingLotRepo {
 
     }
 
+    public ParkingLot getParkingLotById(int id){
+        String sqlStatement = "select * from Parking_Lot where id = ?";
+        return jdbcTemplate.queryForObject(sqlStatement, new Object[]{id}, (resultSet, i) -> {
+            return new ParkingLot(
+                    resultSet.getInt("id"),
+                    resultSet.getString("longitude"),
+                    resultSet.getString("latitude"),
+                    resultSet.getInt("capacity"),
+                    resultSet.getDouble("price"),
+                    resultSet.getString("type"),
+                    resultSet.getDouble("revenue"),
+                    resultSet.getInt("Parking_Lot_Manager_id")
+            );
+        });
+    }
+
 }
