@@ -51,6 +51,7 @@ const Login = () => {
           type: 'success' 
         });
 
+        localStorage.setItem('role', successData.role);
         localStorage.setItem('jwtToken', successData.jwtToken);
       } else {
         const errorText = await response.text();

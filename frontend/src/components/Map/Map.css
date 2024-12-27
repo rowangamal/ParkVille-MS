@@ -82,3 +82,35 @@
 .modal-actions button:hover {
   opacity: 0.9;
 }
+
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 20px;
+}
+
+.grid-row {
+  display: flex;
+  gap: 5px;
+}
+
+.grid-cell {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.grid-cell.available {
+  background: lightgreen;
+}
+
+.grid-cell.occupied {
+  background: red;
+}
+
+.grid-cell.reserved {
+  background: yellow;
+}

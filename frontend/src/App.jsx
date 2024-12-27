@@ -5,7 +5,6 @@ import Login from '../src/components/Login';
 import Signup from '../src/components/Signup';
 import ParkingLotReport from './components/ParkingLotReport';
 import Map from './components/Map/Map';
-import MapUser from './components/MapUser/MapUser';
 
 const App = () => {
   return (
@@ -15,8 +14,6 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/map" element={<Map />} />
-        <Route path="/map-user" element={<MapUser />} />
-        <ParkingLotReport />
       </Routes>
     </Router>
   );
