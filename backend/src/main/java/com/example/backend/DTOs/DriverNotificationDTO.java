@@ -4,7 +4,7 @@ public class DriverNotificationDTO {
     private int driverId;
     private int timeDiff ;
     private int penalty;
-    private int ;
+    
 
     public DriverNotificationDTO(int driverId, int timeDiff, int penalty) {
         this.driverId = driverId;
