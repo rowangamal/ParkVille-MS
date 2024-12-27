@@ -39,6 +39,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/managers/**").hasAuthority("ROLE_MANAGER")
                         .requestMatchers("/api/admins/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("api/drivers/**").hasAuthority("ROLE_DRIVER")
+                        .requestMatchers("/ws/**").permitAll()
 //                        .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement -> sessionManagement

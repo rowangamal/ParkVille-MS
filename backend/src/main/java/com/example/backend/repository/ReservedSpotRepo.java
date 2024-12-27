@@ -1,6 +1,8 @@
 package com.example.backend.repository;
 
 
+import com.example.backend.DTOs.DriverAndLotDTO;
+import com.example.backend.DTOs.DriverNotificationDTO;
 import com.example.backend.model.ReservedSpot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -65,6 +67,49 @@ public class ReservedSpotRepo {
     public void updateLeaveTime(ReservedSpot reservedSpot){
         String sqlStatement = "update Reserved_Spot set leave_time = ? where Driver_id = ? and Parking_Spot_id = ? and Parking_Spot_Parking_Lot_id = ?";
         jdbcTemplate.update(sqlStatement, reservedSpot.getLeaveTime(), reservedSpot.getDriverId(), reservedSpot.getParkingSpotId(), reservedSpot.getParkingSpotParkingLotId());
+    }
+
+
+    public List<DriverNotificationDTO> getAllArrivingWithin10Minutes(){
+        String sql = "{call getAllArrivingWithin10Min()}";
+        return jdbcTemplate.query(sql, (resultSet, i) -> {
+            return new DriverNotificationDTO(
+                    resultSet.getInt("Driver_id"),
+                    resultSet.getInt("time_diff")
+            );
+        });
+    }
+    public List<DriverNotificationDTO> getAllLeavingWithin10Minutes(){
+        String sql = "{call getAllLeavingWithin10Min()}";
+        return jdbcTemplate.query(sql, (resultSet, i) -> {
+            return new DriverNotificationDTO(
+                    resultSet.getInt("Driver_id"),
+                    resultSet.getInt("time_diff")
+            );
+        });
+    }
+    public List<DriverNotificationDTO> getPenaltyOverTime(){
+        String sql = "{call getPenaltyOverTime()}";
+        return jdbcTemplate.query(sql, (resultSet, i) -> {
+            return new DriverNotificationDTO(
+                    resultSet.getInt("Driver_id"),
+                    resultSet.getInt("time_diff"),
+                    resultSet.getInt("penalty")
+            );
+        });
+    }
+    public List<DriverAndLotDTO> getUnArrivedDriverWithSpot(){
+        String sql = "{call getNoArrivedDrivers()}";
+        return jdbcTemplate.query(sql, (resultSet, i) -> {
+            return new DriverAndLotDTO(
+                    resultSet.getInt("Driver_id"),
+                    resultSet.getInt("time_diff"),
+                    resultSet.getInt("penalty"),
+                    resultSet.getInt("price"),
+                    resultSet.getInt("Parking_Lot_id"),
+                    resultSet.getInt("Parking_Spot_id")
+            );
+        });
     }
 
     public List<ReservedSpot> getDriverReservedSpots(int driverId){
