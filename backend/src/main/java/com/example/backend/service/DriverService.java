@@ -96,4 +96,8 @@ public class DriverService {
         parkingSpotService.updateSpotStatus(parkingSpotId, parkingLotId, "empty");
     }
 
+    public List<ReservedSpot> getReservedSpots(){
+        return reservedSpotService.getDriverReservedSpots(this.getDriverId());
+    }
+
 }
