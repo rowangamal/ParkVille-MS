@@ -48,4 +48,5 @@ public class LotManagerController {
         lotManagerService.createParkingLot(lotCreationRequest, managerId);
         return ResponseEntity.status(HttpStatus.CREATED).body("Parking data saved successfully!");
     }
+
 }

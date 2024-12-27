@@ -4,10 +4,7 @@ import com.example.backend.service.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -32,14 +29,36 @@ public class ParkingSpotController {
         }
     }
 
-    @PostMapping("/arrive")
+    @PutMapping("/arrive")
     public ResponseEntity<Object> arrival(@RequestBody Map<String, Integer> request) {
 //        int driverId = request.get("driverId");
         int parkingSpotId = request.get("parkingSpotId");
         int parkingLotId = request.get("parkingLotId");
         try {
             driverService.driverArrival(parkingSpotId, parkingLotId);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/leave")
+    public ResponseEntity<Object> leave(@RequestBody Map<String, Integer> request) {
+//        int driverId = request.get("driverId");
+        int parkingSpotId = request.get("parkingSpotId");
+        int parkingLotId = request.get("parkingLotId");
+        try {
+            driverService.driverDeparture(parkingSpotId, parkingLotId);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<Object> getCurrentReservedSpots() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(driverService.getReservedSpots());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

@@ -5,9 +5,8 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class LoginRequestDTO {
-    private String username;
-    private String password;
+public class ReportUserDTO {
+    private Integer driverId;
+    private Integer reservations;
 
 }
-
