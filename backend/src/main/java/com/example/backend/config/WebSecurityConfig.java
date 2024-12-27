@@ -1,7 +1,6 @@
 package com.example.backend.config;
 
 import com.example.backend.enums.Role;
-//import com.example.backend.services.JWTFilter;
 import com.example.backend.service.JWTFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +29,6 @@ public class WebSecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
 //                        .requestMatchers("/**").permitAll()
-
                         .requestMatchers("/api/drivers/signup").permitAll()
                         .requestMatchers("/api/drivers/login").permitAll()
                         .requestMatchers("/api/admins/signup").permitAll()

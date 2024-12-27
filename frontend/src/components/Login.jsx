@@ -52,7 +52,6 @@ const Login = () => {
           text: `Welcome, ${successData.username}!`, 
           type: 'success' 
         });
-
         localStorage.setItem('jwtToken', successData.jwtToken);
         localStorage.setItem('userId', successData.id);
         localStorage.setItem('userRole', successData.role);
