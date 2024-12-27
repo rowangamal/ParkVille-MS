@@ -31,6 +31,6 @@ public class LotManagerController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-
     }
+
 }

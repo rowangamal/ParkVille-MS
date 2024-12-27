@@ -30,12 +30,17 @@ public class WebSecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
 //                        .requestMatchers("/**").permitAll()
+
                         .requestMatchers("/api/drivers/signup").permitAll()
                         .requestMatchers("/api/drivers/login").permitAll()
                         .requestMatchers("/api/admins/signup").permitAll()
                         .requestMatchers("/api/admins/login").permitAll()
                         .requestMatchers("/api/managers/signup").permitAll()
                         .requestMatchers("/api/managers/login").permitAll()
+                                .requestMatchers("/lot/**").permitAll()
+                                .requestMatchers("/dashboard/**").permitAll()
+                                .requestMatchers("/reports/**").permitAll()
+                                .requestMatchers("/api/report/**").permitAll()
                         .requestMatchers("/api/managers/**").hasAuthority("ROLE_MANAGER")
                         .requestMatchers("/api/admins/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("api/drivers/**").hasAuthority("ROLE_DRIVER")

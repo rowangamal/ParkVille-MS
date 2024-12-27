@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Car, Lock, User } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [formData, setFormData] = useState({ username: '', password: '', role: '' });
   const [message, setMessage] = useState(null);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,7 +19,7 @@ const Login = () => {
       setMessage({ text: 'Username, password, and role are required', type: 'error' });
       return;
     }
-
+  
     let apiUrl = '';
     if (formData.role === 'driver') {
       apiUrl = 'http://localhost:8080/api/drivers/login';
@@ -43,17 +45,35 @@ const Login = () => {
         },
         body: JSON.stringify(requestData),
       });
-      const data = await response.json();
+  
       if (response.ok) {
-        setMessage({ text: data.message || 'Login successful!', type: 'success' });
+        const successData = await response.json();
+        setMessage({ 
+          text: `Welcome, ${successData.username}!`, 
+          type: 'success' 
+        });
+
+        localStorage.setItem('jwtToken', successData.jwtToken);
+        localStorage.setItem('userId', successData.id);
+        localStorage.setItem('userRole', successData.role);
+        if(successData.role === "ROLE_MANAGER"){
+          navigate("/manager")
+        } else if(successData.role === "ROLE_ADMIN"){
+          navigate("/admin")
+        } else {
+          navigate("/")
+        }
       } else {
-        setMessage({ text: data.message || 'Login failed', type: 'error' });
+        const errorText = await response.text();
+        setMessage({ text: errorText || 'Login failed', type: 'error' });
       }
     } catch (error) {
       setMessage({ text: 'Network error, please try again', type: 'error' });
     }
+  
     setFormData({ username: '', password: '', role: '' });
   };
+  
 
   return (
     <div
