@@ -17,7 +17,7 @@ const Login = () => {
       setMessage({ text: 'Username, password, and role are required', type: 'error' });
       return;
     }
-
+  
     let apiUrl = '';
     if (formData.role === 'driver') {
       apiUrl = 'http://localhost:8080/api/drivers/login';
@@ -43,17 +43,26 @@ const Login = () => {
         },
         body: JSON.stringify(requestData),
       });
-      const data = await response.json();
+  
       if (response.ok) {
-        setMessage({ text: data.message || 'Login successful!', type: 'success' });
+        const successData = await response.json();
+        setMessage({ 
+          text: `Welcome, ${successData.username}!`, 
+          type: 'success' 
+        });
+
+        localStorage.setItem('jwtToken', successData.jwtToken);
       } else {
-        setMessage({ text: data.message || 'Login failed', type: 'error' });
+        const errorText = await response.text();
+        setMessage({ text: errorText || 'Login failed', type: 'error' });
       }
     } catch (error) {
       setMessage({ text: 'Network error, please try again', type: 'error' });
     }
+  
     setFormData({ username: '', password: '', role: '' });
   };
+  
 
   return (
     <div
