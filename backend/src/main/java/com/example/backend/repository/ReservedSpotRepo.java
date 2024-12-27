@@ -1,6 +1,7 @@
 package com.example.backend.repository;
 
 
+import com.example.backend.DTOs.DriverAndLotDTO;
 import com.example.backend.DTOs.DriverNotificationDTO;
 import com.example.backend.model.ReservedSpot;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +95,19 @@ public class ReservedSpotRepo {
                     resultSet.getInt("Driver_id"),
                     resultSet.getInt("time_diff"),
                     resultSet.getInt("penalty")
+            );
+        });
+    }
+    public List<DriverAndLotDTO> getUnArrivedDriverWithSpot(){
+        String sql = "{call getNoArrivedDrivers()}";
+        return jdbcTemplate.query(sql, (resultSet, i) -> {
+            return new DriverAndLotDTO(
+                    resultSet.getInt("Driver_id"),
+                    resultSet.getInt("time_diff"),
+                    resultSet.getInt("penalty"),
+                    resultSet.getInt("price"),
+                    resultSet.getInt("Parking_Lot_id"),
+                    resultSet.getInt("Parking_Spot_id")
             );
         });
     }
