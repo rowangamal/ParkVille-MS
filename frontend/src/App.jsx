@@ -39,16 +39,23 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from '../src/components/LandingPage';
 import Login from '../src/components/Login';
 import Signup from '../src/components/Signup';
+import ParkingLotReport from './components/ParkingLotReport';
 
 const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
-    </Router>
+    // <Router>
+    //   <Routes>
+    //     <Route path="/" element={<LandingPage />} />
+    //     <Route path="/signup" element={<Signup />} />
+    //     <Route path="/login" element={<Login />} />
+    //   </Routes>
+    // </Router>
+    <div className="App">
+      <header className="App-header">
+        <h1>Parking Lot Dashboard</h1>
+        <ParkingLotReport />
+      </header>
+    </div>
   );
 };
 

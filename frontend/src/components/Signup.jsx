@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Car, Lock, Mail, User } from 'lucide-react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -55,38 +57,42 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validate()) {
-      return; 
-    }
-
+  
+    if (!validate()) return;
+  
     try {
-      let response;
+      let endpoint = '';
       const dataToSend = {
         username: formData.username,
         email: formData.email,
         password: formData.password,
         role: formData.role,
       };
-
+  
       if (formData.role === 'Driver') {
+        endpoint = 'http://localhost:8080/api/drivers/signup';
         dataToSend.licensePlateNumber = formData.licensePlateNumber;
         dataToSend.paymentMethod = formData.paymentMethod;
-      }
-
-      if (formData.role === 'Driver') {
-        response = await axios.post('http://localhost:8080/api/drivers/signup', dataToSend);
       } else if (formData.role === 'ParkingLotManager') {
-        response = await axios.post('http://localhost:8080/api/managers/signup', dataToSend);
+        endpoint = 'http://localhost:8080/api/managers/signup';
       } else if (formData.role === 'SystemAdmin') {
-        response = await axios.post('http://localhost:8080/api/admins/signup', dataToSend);
+        endpoint = 'http://localhost:8080/api/admins/signup';
       }
-
+  
+      const response = await axios.post(endpoint, dataToSend);
+      navigate('/login');
       setMessage({ text: 'Signup successful!', type: 'success' });
+      setFormData({
+        username: '',
+        email: '',
+        password: '',
+        licensePlateNumber: '',
+        paymentMethod: '',
+        role: 'Driver',
+      });
     } catch (error) {
-      console.log(error.response);
       setMessage({
-        text: error.response?.data?.message || 'Error during signup',
+        text: error.response?.data?.message || 'Error during signup. Please try again.',
         type: 'error',
       });
     }
