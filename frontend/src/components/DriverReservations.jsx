@@ -23,7 +23,8 @@ const DriverReservations = () => {
             if (!response.ok) {
                 throw new Error(await response.text());
             }
-            const data = (await response.json()).filter(spot => spot.leaveTime == null);
+            const data = (await response.json()).filter(spot => spot.leaveTime == null) ;
+            console.log(data[0].endTime);
             setReservedSpots(data);
         } catch (err) {
             setError(err.message);
@@ -38,12 +39,13 @@ const DriverReservations = () => {
         fetchReservedSpots();
     };
 
-    const handleArrive = async (parkingSpotId, parkingLotId) => {
+    const handleArrive = async (parkingSpotId, parkingLotId , startTime) => {
         const requestBody = {
         parkingSpotId: parseInt(parkingSpotId),
         parkingLotId: parseInt(parkingLotId),
+        startTime: startTime,
         };
-    
+        console.log(startTime);
         try {
         const response = await fetch("http://localhost:8080/api/drivers/spot/arrive", {
             method: "PUT",
@@ -65,12 +67,13 @@ const DriverReservations = () => {
         }
     };
     
-    const handleLeave = async (parkingSpotId, parkingLotId) => {
+    const handleLeave = async (parkingSpotId, parkingLotId , startTime) => {
         const requestBody = {
         parkingSpotId: parseInt(parkingSpotId),
         parkingLotId: parseInt(parkingLotId),
+        startTime: startTime,
         };
-    
+        console.log(startTime);
         try {
         const response = await fetch("http://localhost:8080/api/drivers/spot/leave", {
             method: "PUT",
@@ -118,7 +121,7 @@ const DriverReservations = () => {
                         <p>Penalty: ${spot.penalty.toFixed(2)}</p>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
                             {spot.arrivalTime === null && <button
-                                onClick={() => handleArrive(spot.parkingSpotId, spot.parkingSpotParkingLotId)}
+                                onClick={() => handleArrive(spot.parkingSpotId, spot.parkingSpotParkingLotId, spot.startTime)}
                                 style={{
                                     backgroundColor: '#4CAF50',
                                     color: 'white',
@@ -131,7 +134,7 @@ const DriverReservations = () => {
                                 Arrive
                             </button>}
                             {spot.arrivalTime !== null && <button
-                                onClick={() => handleLeave(spot.parkingSpotId, spot.parkingSpotParkingLotId)}
+                                onClick={() => handleLeave(spot.parkingSpotId, spot.parkingSpotParkingLotId , spot.startTime)}
                                 style={{
                                     backgroundColor: '#f44336',
                                     color: 'white',

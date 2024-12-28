@@ -33,7 +33,7 @@ public class ParkingSpotService {
         return parkingSpotRepo.getstatus(spotId, parkingLotId);
     }
 
-    public void updateSpotStatus(int id, int parkingLotId, String status){
+    public void updateSpotStatus(int id, int parkingLotId ,  String status){
         parkingSpotRepo.updateStatus(id, parkingLotId, status);
     }
 

@@ -9,6 +9,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,9 +44,9 @@ public class ReservedSpotRepo {
         jdbcTemplate.update("update Parking_Spot set status = ? where id = ?", "empty", parkingSpotId);
     }
 
-    public ReservedSpot getReservedSpot(int driverId, int parkingSpotId, int parkingLotId){
-        String sqlStatement = "select * from Reserved_Spot where Driver_id = ? and Parking_Spot_id = ? and Parking_Spot_Parking_Lot_id = ?";
-        return jdbcTemplate.queryForObject(sqlStatement, new Object[]{driverId, parkingSpotId, parkingLotId}, (resultSet, i) -> {
+    public ReservedSpot getReservedSpot(int driverId, int parkingSpotId, int parkingLotId , Timestamp startTime){
+        String sqlStatement = "select * from Reserved_Spot where Driver_id = ? and Parking_Spot_id = ? and Parking_Spot_Parking_Lot_id = ? and start_time = ?";
+        return jdbcTemplate.queryForObject(sqlStatement, new Object[]{driverId, parkingSpotId, parkingLotId , startTime}, (resultSet, i) -> {
             return new ReservedSpot(
                     resultSet.getTimestamp("end_time"),
                     resultSet.getTimestamp("start_time"),

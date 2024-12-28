@@ -57,11 +57,12 @@ public class NotificationOnTime {
     public void getUnArrivedDrivers() {
         List<DriverAndLotDTO> driverAndLotDTOList = reservedSpotRepo.getUnArrivedDriverWithSpot();
         for (DriverAndLotDTO driverAndLotDTO : driverAndLotDTOList) {
+            System.out.println("nooooooo arrive = " + driverAndLotDTO.getDriverId());
             NotificationMessageDTO notificationMessageDTO = new NotificationMessageDTO("you have for not arrive for "+ driverAndLotDTO.getTimeDiff() + " minutes with " + driverAndLotDTO.getPenalty() + " dollars and original price of " + driverAndLotDTO.getPrice() + " dollars");
             messagingTemplate.convertAndSend("/topic/notification/drive/" + driverAndLotDTO.getDriverId()
                     , notificationMessageDTO);
             NotificationMessageDTO notificationMessageDTOOfSpot = new NotificationMessageDTO(driverAndLotDTO.getParkingSpotId() + "");
-            messagingTemplate.convertAndSend("/topic/notification/lot/" + driverAndLotDTO.getParkingLotId()
+            messagingTemplate.convertAndSend("/topic/notifications/lotArrive" + driverAndLotDTO.getParkingLotId()
                     , notificationMessageDTOOfSpot);
         }
     }

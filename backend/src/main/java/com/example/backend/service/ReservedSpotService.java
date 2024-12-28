@@ -13,8 +13,8 @@ public class ReservedSpotService {
     @Autowired
     private ReservedSpotRepo reservedSpotRepo;
 
-    public ReservedSpot getReservedSpot(int driverId, int parkingSpotId, int parkingLotId){
-        return reservedSpotRepo.getReservedSpot(driverId, parkingSpotId, parkingLotId);
+    public ReservedSpot getReservedSpot(int driverId, int parkingSpotId, int parkingLotId , Timestamp startTime){
+        return reservedSpotRepo.getReservedSpot(driverId, parkingSpotId, parkingLotId , startTime);
     }
 
     public void delete(int driverId, int parkingSpotId, int parkingLotId){

@@ -6,6 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @RestController
@@ -29,11 +34,16 @@ public class ParkingSpotController {
     }
 
     @PutMapping("/arrive")
-    public ResponseEntity<Object> arrival(@RequestBody Map<String, Integer> request) {
-        int parkingSpotId = request.get("parkingSpotId");
-        int parkingLotId = request.get("parkingLotId");
+    public ResponseEntity<Object> arrival(@RequestBody Map<String, String> request) {
+        int parkingSpotId = Integer.parseInt(request.get("parkingSpotId"));
+        int parkingLotId = Integer.parseInt(request.get("parkingLotId"));
+        String startTimeString = request.get("startTime");
+        ZonedDateTime utcDateTime = ZonedDateTime.parse(startTimeString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        ZonedDateTime gmtPlus2DateTime = utcDateTime.withZoneSameInstant(ZoneId.of("GMT+2"));
+        Timestamp startTime = Timestamp.valueOf(gmtPlus2DateTime.toLocalDateTime());
+
         try {
-            driverService.driverArrival(parkingSpotId, parkingLotId);
+            driverService.driverArrival(parkingSpotId, parkingLotId , startTime);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -41,12 +51,19 @@ public class ParkingSpotController {
     }
 
     @PutMapping("/leave")
-    public ResponseEntity<Object> leave(@RequestBody Map<String, Integer> request) {
-        int parkingSpotId = request.get("parkingSpotId");
-        int parkingLotId = request.get("parkingLotId");
+    public ResponseEntity<Object> leave(@RequestBody Map<String, String> request) {
+        int parkingSpotId = Integer.parseInt(request.get("parkingSpotId"));
+        int parkingLotId = Integer.parseInt(request.get("parkingLotId"));
+        String startTimeString = request.get("startTime");
+        ZonedDateTime utcDateTime = ZonedDateTime.parse(startTimeString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        ZonedDateTime gmtPlus2DateTime = utcDateTime.withZoneSameInstant(ZoneId.of("GMT+2"));
+
+        Timestamp startTime = Timestamp.valueOf(gmtPlus2DateTime.toLocalDateTime());
+        System.out.println(startTime);
+
         try {
             // TODO: LW m4a ems7 el row mn el DB reservation table
-            driverService.driverDeparture(parkingSpotId, parkingLotId);
+            driverService.driverDeparture(parkingSpotId, parkingLotId , startTime);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

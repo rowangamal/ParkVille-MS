@@ -15,7 +15,7 @@ function Map() {
   const [price, setPrice] = useState(10); 
   const [duration, setDuration] = useState(1); 
   const [slots, setSlots] = useState(10);
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState(localStorage.getItem('userRole') || '');
   const [JWT, setJWT] = useState('');
   const [parkingType, setParkingType] = useState("Regular");
   const [gridState, setGridState] = useState([]);  
@@ -26,7 +26,7 @@ function Map() {
   const [parkingSpotId, setParkingSpotId] = useState(null);
   const mapRef = useRef(null);
   const modalRef = useRef(null);
-  const [id , setId] = useState(null);
+  const [id , setId] = useState(localStorage.getItem('userId') || '');
   const [isVisiable, setIsVisible] = useState(false);
   const [notifications, setNotifications] = useState("");
 
@@ -57,6 +57,11 @@ function Map() {
         setNotifications(notification.message);
         setIsVisible(true);
     };
+    if(role == "ROLE_MANAGER"){
+      console.log(id)
+      return () => {
+      };
+    }
     const deactivateSocket = createSocket(`/topic/notification/drive/${id}`, handleNotification);
     console.log(id)
     return () => {
@@ -69,24 +74,52 @@ useEffect(() => {
       setNotifications(notification.message);
       setIsVisible(true);
   };
+  if(role == "ROLE_MANAGER"){
+    console.log(id)
+    return () => {
+    };
+  }
   const deactivateSocket = createSocket(`/topic/notification/penalty/${id}`, handleNotification);
   console.log(id)
   return () => {
       deactivateSocket(); 
   };
 }, []);
-// useEffect(() => {
-//   const handleNotification = (notification) => {
-//     console.log(notification);
-//       setNotifications(notification.message);
-//       setIsVisible(true);
-//   };
-//   const deactivateSocket = createSocket(`/topic/notification/penalty/${id}`, handleNotification);
-//   console.log(id)
-//   return () => {
-//       deactivateSocket(); 
-//   };
-// }, []);
+
+useEffect(() => {
+  const handleNotification = (notification) => {
+    const parkingSpot = parseInt(notification.message, 10);
+    const updatedGrid = [...gridState];
+    const rowIndex = Math.floor((parkingSpot - 1) / 10);
+    const colIndex = (parkingSpot - 1) % 10;
+    updatedGrid[rowIndex][colIndex].status = "empty";
+    setGridState(updatedGrid);
+    setReservedSpots(reservedSpots - 1);
+  };
+const deactivateSocket = createSocket(`/topic/notifications/lot/${parkingLotId}`, handleNotification);
+console.log(id)
+return () => {
+    deactivateSocket(); 
+};
+}, [parkingLotId]);
+
+useEffect(() => {
+  const handleNotification = (notification) => {
+    const parkingSpot = parseInt(notification.message, 10);
+    const updatedGrid = [...gridState];
+    const rowIndex = Math.floor((parkingSpot - 1) / 10);
+    const colIndex = (parkingSpot - 1) % 10;
+    updatedGrid[rowIndex][colIndex].status = "occupied";
+    setGridState(updatedGrid);
+    setReservedSpots(reservedSpots - 1);
+  };
+const deactivateSocket = createSocket(`/topic/notifications/lotArrive/${parkingLotId}`, handleNotification);
+console.log(id)
+return () => {
+    deactivateSocket(); 
+};
+}, [parkingLotId]);
+
 
 const fetchCreatedParkingAreas = async () => { // DONE
     try {
@@ -206,6 +239,7 @@ const fetchCreatedParkingAreas = async () => { // DONE
         setCreatedParkingLot(responseData);
         setSelectedParking(parking);
         setParkingLotId(responseData.id);
+        
       } else {  
         setSelectedNewParking(parking); 
         setPrice(10);
