@@ -18,6 +18,7 @@ const LandingPage = () => {
   );
 };
 
+
 const styles = {
   container: {
     display: 'flex',
