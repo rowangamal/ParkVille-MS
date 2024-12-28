@@ -75,18 +75,18 @@ useEffect(() => {
       deactivateSocket(); 
   };
 }, []);
-useEffect(() => {
-  const handleNotification = (notification) => {
-    console.log(notification);
-      setNotifications(notification.message);
-      setIsVisible(true);
-  };
-  const deactivateSocket = createSocket(`/topic/notification/penalty/${id}`, handleNotification);
-  console.log(id)
-  return () => {
-      deactivateSocket(); 
-  };
-}, []);
+// useEffect(() => {
+//   const handleNotification = (notification) => {
+//     console.log(notification);
+//       setNotifications(notification.message);
+//       setIsVisible(true);
+//   };
+//   const deactivateSocket = createSocket(`/topic/notification/penalty/${id}`, handleNotification);
+//   console.log(id)
+//   return () => {
+//       deactivateSocket(); 
+//   };
+// }, []);
 
 const fetchCreatedParkingAreas = async () => { // DONE
     try {
