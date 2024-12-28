@@ -7,6 +7,7 @@ import com.example.backend.repository.AdministratorRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,6 +32,8 @@ public class AdministratorService {
             return "Username already exists.";
         }
 
+        final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+        administrator.setPassword(encoder.encode(administrator.getPassword()));
         administratorRepo.save(administrator);
         return "Signup successful.";
     }
@@ -45,8 +48,9 @@ public class AdministratorService {
             throw  new RuntimeException("Invalid email or password.");
         }
 
+        final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
         Administrator administrator = matchingAdmin.get();
-        if (!administrator.getPassword().equals(password)) {
+        if (!encoder.matches(password, administrator.getPassword())) {
             throw  new RuntimeException("Invalid email or password.");
         }
 

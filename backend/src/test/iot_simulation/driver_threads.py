@@ -3,6 +3,7 @@ import random
 import string
 import time
 from threading import Thread
+from datetime import datetime, timezone
 
 # Configuration
 BASE_URL = "http://localhost:8080/api/drivers"
@@ -61,8 +62,8 @@ def simulate_driver(driver_id):
 
     # Step 3: Attempt to reserve parking spots
     for _ in range(10):  # Each driver attempts 10 reservations
-        parking_lot_id = random.randint(195, 200)
-        parking_spot_id = random.randint(1, 5)
+        parking_lot_id = random.randint(400, 450)
+        parking_spot_id = random.randint(1, 10)
         duration = 2
 
         reserve_data = {
@@ -71,14 +72,21 @@ def simulate_driver(driver_id):
             "duration": duration
         }
 
-        # Directly make the reservation request without the lock
         reserve_response = requests.post(RESERVE_SPOT_ENDPOINT, json=reserve_data, headers=headers)
 
         if reserve_response.status_code == 201:
             print(f"Spot {parking_spot_id} reserved for driver {username} in lot {parking_lot_id}.")
             
+            # Generate ISO 8601 timestamp for current UTC time
+            start_time = datetime.now(timezone.utc).isoformat() 
+
+
             # Proceed with arrival
-            arrival_data = {"parkingSpotId": parking_spot_id, "parkingLotId": parking_lot_id}
+            arrival_data = {
+                "parkingSpotId": parking_spot_id,
+                "parkingLotId": parking_lot_id,
+                "startTime": start_time
+            }
             arrive_response = requests.put(ARRIVE_ENDPOINT, json=arrival_data, headers=headers)
 
             if arrive_response.status_code == 200:
@@ -108,4 +116,4 @@ def simulate_drivers_and_reservations_threaded(num_drivers=10):
         thread.join()
 
 if __name__ == "__main__":
-    simulate_drivers_and_reservations_threaded(num_drivers=10)
+    simulate_drivers_and_reservations_threaded(num_drivers=1)

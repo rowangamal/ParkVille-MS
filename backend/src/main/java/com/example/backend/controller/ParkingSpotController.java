@@ -41,11 +41,15 @@ public class ParkingSpotController {
         ZonedDateTime utcDateTime = ZonedDateTime.parse(startTimeString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         ZonedDateTime gmtPlus2DateTime = utcDateTime.withZoneSameInstant(ZoneId.of("GMT+2"));
         Timestamp startTime = Timestamp.valueOf(gmtPlus2DateTime.toLocalDateTime());
-
+        System.out.println(startTime);
+//        System.out.println();
         try {
             driverService.driverArrival(parkingSpotId, parkingLotId , startTime);
+            System.out.println("Arrived");
             return ResponseEntity.status(HttpStatus.OK).build();
+
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

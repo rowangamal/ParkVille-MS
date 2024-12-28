@@ -87,4 +87,4 @@ def simulate_managers_and_lots(num_managers=10, lots_per_manager=5):
         # print("On average {:.2f} seconds per parking lot".format((end_time - start_time) / lots_per_manager))
 
 if __name__ == "__main__":
-    simulate_managers_and_lots(num_managers=1, lots_per_manager=10)
+    simulate_managers_and_lots(num_managers=10, lots_per_manager=20)

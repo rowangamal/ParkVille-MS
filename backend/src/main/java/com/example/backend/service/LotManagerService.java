@@ -10,6 +10,7 @@ import com.example.backend.repository.ParkingLotRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,6 +37,8 @@ public class LotManagerService {
             return "Username already exists.";
         }
 
+        final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+        lotManager.setPassword(encoder.encode(lotManager.getPassword()));
         lotManagerRepo.save(lotManager);
         return "Signup successful.";
     }
@@ -49,9 +52,9 @@ public class LotManagerService {
         if (matchingManager.isEmpty()) {
             throw  new RuntimeException("Invalid email or password.");
         }
-
+        final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
         LotManager lotManager = matchingManager.get();
-        if (!lotManager.getPassword().equals(password)) {
+        if (!encoder.matches(password, lotManager.getPassword())) {
             throw  new RuntimeException("Invalid email or password.");
         }
         String jwt = jwtService.generateToken(lotManager.getId(), lotManager.getRole());

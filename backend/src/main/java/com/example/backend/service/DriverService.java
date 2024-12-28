@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +49,9 @@ public class DriverService {
             return "Username already exists.";
         }
 
+        final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+        driver.setPassword(encoder.encode(driver.getPassword()));
+
         driverRepo.save(driver);
         return "Signup successful.";
     }
@@ -64,7 +68,8 @@ public class DriverService {
         }
 
         Driver driver = matchingDriver.get();
-        if (!driver.getPassword().equals(password)) {
+        final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+        if (!encoder.matches(password, driver.getPassword())) {
             throw new RuntimeException("Invalid email or password.");
         }
         String jwt = jwtService.generateToken(driver.getId(), driver.getRole());
