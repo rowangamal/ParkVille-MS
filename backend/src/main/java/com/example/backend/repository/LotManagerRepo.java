@@ -17,7 +17,7 @@ public class LotManagerRepo {
     private JdbcTemplate jdbcTemplate;
 
     public void save(LotManager lotManager){
-        String sqlStatement = "insert into parking_lot_manager " +
+        String sqlStatement = "insert into Parking_Lot_Manager " +
                 "(username, email, password) " +
                 "values ( ?, ?, ?)";
 
@@ -25,7 +25,7 @@ public class LotManagerRepo {
     }
 
     public List<LotManager> getAll(){
-        String sqlStatement = "select * from parking_lot_manager";
+        String sqlStatement = "select * from Parking_Lot_Manager";
 
         RowMapper<LotManager> mapper = new RowMapper<LotManager>() {
             @Override
@@ -42,7 +42,7 @@ public class LotManagerRepo {
     }
 
     public LotManager findManagerById(int id){
-        String sqlStatement = "select * from parking_lot_manager where id = ?";
+        String sqlStatement = "select * from Parking_Lot_Manager where id = ?";
         return jdbcTemplate.queryForObject(sqlStatement, new Object[]{id}, (resultSet, i) -> {
             LotManager lotManager = new LotManager();
             lotManager.setId(resultSet.getInt("id"));
