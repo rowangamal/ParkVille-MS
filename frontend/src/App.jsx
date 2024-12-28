@@ -6,6 +6,8 @@ import Signup from '../src/components/Signup';
 import AdminDashboard from './components/AdminDashboard';
 import ManagerDashboard from './components/ManagerDashboard';
 import Map from './components/Map/Map';
+import DriverDashboard from './components/DriverDashboard';
+import DriverReservations from './components/DriverReservations';
 
 const App = () => {
   return (
@@ -17,6 +19,8 @@ const App = () => {
         <Route path="/manager" element={<ManagerDashboard />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/map" element={<Map />} />
+        <Route path="/driver" element={<DriverDashboard />} />
+        <Route path="/driver-reservations" element={<DriverReservations />} />
       </Routes>
     </Router>
   );

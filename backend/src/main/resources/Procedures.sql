@@ -57,6 +57,7 @@ END IF;
 END #
 DELIMITER ;
 
+
 -- This procedure checks if no driver arrived and the end time has passed
 DELIMITER #
 CREATE PROCEDURE getNoArrivedDrivers()
