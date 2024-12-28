@@ -9,6 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ParkingLotResponseDTO {
+    private int id;
     private String longitude;
     private String latitude;
     private double pricePerHour;

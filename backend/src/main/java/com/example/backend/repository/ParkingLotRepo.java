@@ -1,13 +1,17 @@
 package com.example.backend.repository;
 
 import com.example.backend.DTOs.LotCreationDTO;
+import com.example.backend.DTOs.LotLocationDTO;
 import com.example.backend.DTOs.ParkingLotResponseDTO;
 import com.example.backend.model.ParkingLot;
 import com.example.backend.model.ParkingSpot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -31,8 +35,6 @@ public class ParkingLotRepo {
                 managerId);
 
         int parking_lot_id = getLastParkingLotId();
-        System.out.println("yarab");
-        System.out.println(parking_lot_id);
 
         for(int i = 0; i < parkingLot.getNumberOfSlots(); i++){
             String sqlStatement2 = "insert into Parking_Spot " +
@@ -59,12 +61,13 @@ public class ParkingLotRepo {
     }
 
     public ParkingLotResponseDTO getParkingLotInfo(String latitude, String longitude) {
-        String parkingLotQuery = "SELECT longitude, latitude, price AS pricePerHour, type AS parkingType " +
+        String parkingLotQuery = "SELECT id, longitude, latitude, price AS pricePerHour, type AS parkingType " +
                 "FROM parkdb.Parking_Lot WHERE latitude = ? AND longitude = ?";
 
         ParkingLotResponseDTO parkingLot = jdbcTemplate.queryForObject(parkingLotQuery, new Object[]{latitude, longitude},
                 (rs, rowNum) -> {
                     ParkingLotResponseDTO dto = new ParkingLotResponseDTO();
+                    dto.setId(rs.getInt("id"));
                     dto.setLongitude(rs.getString("longitude"));
                     dto.setLatitude(rs.getString("latitude"));
                     dto.setPricePerHour(rs.getDouble("pricePerHour"));
@@ -101,6 +104,19 @@ public class ParkingLotRepo {
                     resultSet.getDouble("revenue"),
                     resultSet.getInt("Parking_Lot_Manager_id")
             );
+        });
+    }
+
+    public List<LotLocationDTO> getAllParkingLots() {
+        String sqlStatement = "SELECT longitude, latitude FROM parking_lot";
+        return jdbcTemplate.query(sqlStatement, new RowMapper<LotLocationDTO>() {
+            @Override
+            public LotLocationDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+                LotLocationDTO dto = new LotLocationDTO();
+                dto.setLongitude(rs.getString("longitude"));
+                dto.setLatitude(rs.getString("latitude"));
+                return dto;
+            }
         });
     }
 }

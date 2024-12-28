@@ -60,7 +60,7 @@ const Login = () => {
         } else if(successData.role === "ROLE_ADMIN"){
           navigate("/admin")
         } else {
-          navigate("/")
+          navigate("/map")
         }
       } else {
         const errorText = await response.text();
