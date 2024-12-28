@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
 import './Map.css';
+import { bounds } from "leaflet";
+import { use } from "react";
 
 function Map() {
   const [parkingAreas, setParkingAreas] = useState([]);
@@ -9,27 +11,56 @@ function Map() {
   const [selectedParking, setSelectedParking] = useState(null);
   const [createdParkingLot, setCreatedParkingLot] = useState(null);
   const [price, setPrice] = useState(10); 
+  const [duration, setDuration] = useState(1); 
   const [slots, setSlots] = useState(10);
   const [role, setRole] = useState('');
   const [JWT, setJWT] = useState('');
   const [parkingType, setParkingType] = useState("Regular");
   const [gridState, setGridState] = useState([]);  
   const [capacity, setCapacity] = useState([]); 
+  const [isDriver, setIsDriver] = useState(true);
+  const [reservedSpots, setReservedSpots] = useState(1);
+  const [parkingLotId, setParkingLotId] = useState(null);
+  const [parkingSpotId, setParkingSpotId] = useState(null);
   const mapRef = useRef(null);
   const modalRef = useRef(null);
   
   useEffect(() => {
-    const storedRole = localStorage.getItem('role');
+    const storedRole = localStorage.getItem('userRole');
     const storedJWT = localStorage.getItem('jwtToken');
     if (storedRole) { 
       setRole(storedRole);
+      if(storedRole === "ROLE_MANAGER"){
+        setIsDriver(false);
+      }
     } 
     if(storedJWT) {
       setJWT(storedJWT);
     } 
   }, []);
 
-  const fetchParkingAreas = async (bounds) => {
+const fetchCreatedParkingAreas = async () => { // DONE
+    try {
+      const response = await fetch('http://localhost:8080/api/all-lots');
+      if (!response.ok) {
+        throw new Error(`Backend error: ${response.statusText}`);
+      }
+      const parkingLots = await response.json();
+      const parking = [];
+      parkingLots.forEach((lot) => {
+        parking.push({
+            lat: lot.latitude, 
+            lon: lot.longitude,
+        });
+        });
+        setParkingAreas(parking);
+    } catch (error) {
+        console.error('Error fetching parking areas:', error.message);
+    }
+
+};
+
+  const fetchParkingAreas = async (bounds) => { // DONE
     const overpassUrl = "https://overpass-api.de/api/interpreter";
     const query = `[out:json];
       (
@@ -59,13 +90,13 @@ function Map() {
     setParkingAreas(parking);
   };
 
-  const handleOutsideClick = (event) => {
+  const handleOutsideClick = (event) => { // DONE
     if (modalRef.current && !modalRef.current.contains(event.target)) {
       setSelectedNewParking(null);
     }
   };
 
-  useEffect(() => {
+  useEffect(() => { // DONE
     if (selectedNewParking) {
       document.addEventListener("mousedown", handleOutsideClick);
     }
@@ -74,20 +105,41 @@ function Map() {
     }; 
   }, [selectedNewParking]);
 
-  const handleViewportChange = () => {
+  const handleViewportChange = () => { // DONE
     const mapInstance = mapRef.current;
     mapInstance.on("moveend", handleViewportChange);
     const bounds = mapRef.current.getBounds();
-    fetchParkingAreas(bounds);
+    if(role === "ROLE_MANAGER"){
+        fetchParkingAreas(bounds);
+    } else {
+        fetchCreatedParkingAreas();
+    }
   };
 
-  const handleMarkerClick = async (parking) => {
+  const toggleGridSpot = (row, col) => {
+    const updatedGrid = [...gridState];
+    if (!(updatedGrid[row][col].status == "occupied")) {
+      updatedGrid[row][col].status = updatedGrid[row][col].status == "empty" ? "reserved" : "empty";
+      const selectedCount = updatedGrid[row][col].status == "reserved" ? 1 : -1;
+      setReservedSpots(reservedSpots + selectedCount);
+      if(parkingSpotId === null){
+        setParkingSpotId(row * 10 + col + 1)
+      } else {
+        const rowIndex = Math.floor((parkingSpotId - 1) / 10); 
+        const colIndex = (parkingSpotId - 1) % 10;
+        updatedGrid[rowIndex][colIndex].status = "empty";
+        setParkingSpotId(row * 10 + col + 1)
+      }
+    }
+    setGridState(updatedGrid);
+  };
+
+  const handleMarkerClick = async (parking) => { // DONE
     try { 
       const checkPayload = {
         longitude: parking.lon,
         latitude: parking.lat,
       };
-    
       const response = await fetch("http://localhost:8080/api/is-parking-lot-created", {
         method: "POST",
         headers: {  
@@ -104,6 +156,7 @@ function Map() {
         initializeGrid(numberOfRows, numberOfColumns, responseData.parkingSpots);  
         setCreatedParkingLot(responseData);
         setSelectedParking(parking);
+        setParkingLotId(responseData.id);
       } else {  
         setSelectedNewParking(parking); 
         setPrice(10);
@@ -114,12 +167,55 @@ function Map() {
     }
   };
 
-  const resetPopup = () => {
+  const resetPopup = async () => { //DONE
+    setDuration(1)
+    setReservedSpots(1)
     setGridState([]);
     setSelectedParking(null);
+    setParkingLotId(null);
+    setParkingSpotId(null);
   }
 
-  const initializeGrid = (rows, cols, parkingSpots) => {
+  const onReserveClick = async () => {// - tO be implemented
+    if(parkingSpotId === null){
+        return;
+    }
+    const url = "http://localhost:8080/api/drivers/spot/reserve"; 
+
+    const requestData = {
+        parkingSpotId: parkingSpotId,
+        parkingLotId: parkingLotId,
+        duration: duration,
+    };
+
+    try {
+        const response = await fetch(url, {
+        method: "POST",
+        headers: {  
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${JWT}`,
+        }, 
+        body: JSON.stringify(requestData),
+        });
+
+        if (response.ok) {
+        console.log("Spot reserved successfully!");
+        } else {
+        const error = await response.json();
+        console.error("Error reserving spot:", error);
+        }
+    } catch (err) {
+        console.error("Network error:", err);
+    }
+    setDuration(1)
+    setReservedSpots(1)
+    setGridState([]);
+    setSelectedParking(null);
+    setParkingLotId(null);
+    setParkingSpotId(null);
+  }
+
+  const initializeGrid = (rows, cols, parkingSpots) => { // DONE
     
     const grid = Array.from({ length: rows }, () =>
       Array.from({ length: cols }, () => ({ status: 'empty' }))
@@ -137,7 +233,7 @@ function Map() {
     setGridState(grid);
   };
 
-  const handleSave = async () => {
+  const handleCreationSave = async () => { //DONE
     const payload = {
       longitude: selectedNewParking.lon,
       latitude: selectedNewParking.lat,
@@ -253,7 +349,7 @@ function Map() {
               </div>
             </div>
             <div className="modal-actions">
-              <button onClick={handleSave}>Save</button>
+              <button onClick={handleCreationSave}>Save</button>
               <button onClick={() => setSelectedNewParking(null)}>Close</button>
             </div>
           </div>
@@ -281,6 +377,18 @@ function Map() {
                 <label>Parking type:</label>
                 <span>{createdParkingLot.parkingType}</span>
               </div> 
+              { isDriver && <div className="form-group">
+                <label>Duration in Hours:</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="48"
+                  step={1} 
+                  value={duration}
+                  onChange={(e) => setDuration(Number(e.target.value))}
+                  onKeyDown={(e) => e.preventDefault()}
+                />
+              </div> }
               <div className="grid">
                 {gridState.map((row, rowIndex) => (
                   <div key={rowIndex} className="grid-row">
@@ -294,13 +402,19 @@ function Map() {
                             ? 'reserved'
                             : 'available'
                         }`}
-                      />
+                        onClick={() => {
+                            if (isDriver) {
+                              toggleGridSpot(rowIndex, colIndex);
+                            }
+                          }}
+                        />
                     ))}
                   </div>
                 ))}
               </div>
             </div>
             <div className="modal-actions">
+              { isDriver && <button onClick={onReserveClick}>Reserve</button>}
               <button onClick={resetPopup}>Close</button>
             </div>
           </div>
@@ -309,4 +423,5 @@ function Map() {
     </div>
   );  
 }
+
 export default Map;
