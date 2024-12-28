@@ -4,6 +4,8 @@ import 'leaflet/dist/leaflet.css';
 import './Map.css';
 import { bounds } from "leaflet";
 import { use } from "react";
+import Popup from "../PopUp";
+import createSocket from "../../Socket.js";
 
 function Map() {
   const [parkingAreas, setParkingAreas] = useState([]);
@@ -24,12 +26,22 @@ function Map() {
   const [parkingSpotId, setParkingSpotId] = useState(null);
   const mapRef = useRef(null);
   const modalRef = useRef(null);
+  const [id , setId] = useState(null);
+  const [isVisiable, setIsVisible] = useState(false);
+  const [notifications, setNotifications] = useState("");
+
+
   
   useEffect(() => {
     const storedRole = localStorage.getItem('userRole');
     const storedJWT = localStorage.getItem('jwtToken');
+    const storedId = localStorage.getItem('userId');
+    if (storedId) {
+      setId(storedId);
+    }
     if (storedRole) { 
       setRole(storedRole);
+      console.log(storedRole);
       if(storedRole === "ROLE_MANAGER"){
         setIsDriver(false);
       }
@@ -38,6 +50,43 @@ function Map() {
       setJWT(storedJWT);
     } 
   }, []);
+
+  useEffect(() => {
+    const handleNotification = (notification) => {
+      console.log(notification);
+        setNotifications(notification.message);
+        setIsVisible(true);
+    };
+    const deactivateSocket = createSocket(`/topic/notification/drive/${id}`, handleNotification);
+    console.log(id)
+    return () => {
+        deactivateSocket(); 
+    };
+}, []);
+useEffect(() => {
+  const handleNotification = (notification) => {
+    console.log(notification);
+      setNotifications(notification.message);
+      setIsVisible(true);
+  };
+  const deactivateSocket = createSocket(`/topic/notification/penalty/${id}`, handleNotification);
+  console.log(id)
+  return () => {
+      deactivateSocket(); 
+  };
+}, []);
+useEffect(() => {
+  const handleNotification = (notification) => {
+    console.log(notification);
+      setNotifications(notification.message);
+      setIsVisible(true);
+  };
+  const deactivateSocket = createSocket(`/topic/notification/penalty/${id}`, handleNotification);
+  console.log(id)
+  return () => {
+      deactivateSocket(); 
+  };
+}, []);
 
 const fetchCreatedParkingAreas = async () => { // DONE
     try {
@@ -420,6 +469,7 @@ const fetchCreatedParkingAreas = async () => { // DONE
           </div>
         </div>
       )}
+      {isVisiable && <Popup message={notifications} type="success" onClose={() => setIsVisible(false)} />}
     </div>
   );  
 }
