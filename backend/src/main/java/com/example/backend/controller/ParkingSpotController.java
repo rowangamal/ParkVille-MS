@@ -17,7 +17,6 @@ public class ParkingSpotController {
 
     @PostMapping("/reserve")
     public ResponseEntity<Object> reserveSpot(@RequestBody Map<String, Integer> request) {
-//        int driverId = request.get("driverId");
         int parkingSpotId = request.get("parkingSpotId");
         int parkingLotId = request.get("parkingLotId");
         int duration = request.get("duration");
@@ -31,7 +30,6 @@ public class ParkingSpotController {
 
     @PutMapping("/arrive")
     public ResponseEntity<Object> arrival(@RequestBody Map<String, Integer> request) {
-//        int driverId = request.get("driverId");
         int parkingSpotId = request.get("parkingSpotId");
         int parkingLotId = request.get("parkingLotId");
         try {
@@ -44,10 +42,10 @@ public class ParkingSpotController {
 
     @PutMapping("/leave")
     public ResponseEntity<Object> leave(@RequestBody Map<String, Integer> request) {
-//        int driverId = request.get("driverId");
         int parkingSpotId = request.get("parkingSpotId");
         int parkingLotId = request.get("parkingLotId");
         try {
+            // TODO: LW m4a ems7 el row mn el DB reservation table
             driverService.driverDeparture(parkingSpotId, parkingLotId);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (Exception e) {
